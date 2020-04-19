@@ -1,8 +1,8 @@
 package models
 
 object DatingLabel {
-  final val BCVariants = List("BC", "bc", "B.C.", "b.c.")
-  final val ADVariants = List("AD", "ad", "A.D.", "a.d.")
+  final val BCVariants = List("BC", "bc", "B.C.", "b.c.", "BCE", "bce")
+  final val ADVariants = List("AD", "ad", "A.D.", "a.d.", "CE", "ce")
 
   sealed trait DatingLabel {
     val label: String

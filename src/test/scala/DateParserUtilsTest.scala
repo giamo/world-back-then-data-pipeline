@@ -1,6 +1,6 @@
 import cats.implicits._
 import models.DatingLabel.{AD, BC}
-import models.{ApproximateYear, ExactYear}
+import models.{ApproximateDecade, ApproximateYear, ExactDecade, ExactYear}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -58,6 +58,10 @@ final class DateParserUtilsTest extends AnyFlatSpec with Matchers {
     parseDate("9CE") should ===(ExactYear(9, AD).asRight)
     parseDate("10 BCE") should ===(ExactYear(10, BC).asRight)
     parseDate("10 CE") should ===(ExactYear(10, AD).asRight)
+    parseDate("11 B.C.E.") should ===(ExactYear(11, BC).asRight)
+    parseDate("11 C.E.") should ===(ExactYear(11, AD).asRight)
+    parseDate("12 b.c.e.") should ===(ExactYear(12, BC).asRight)
+    parseDate("12 c.e.") should ===(ExactYear(12, AD).asRight)
   }
 
   it should "detect the valid formats to specify approximate years" in {
@@ -74,5 +78,11 @@ final class DateParserUtilsTest extends AnyFlatSpec with Matchers {
     parseDate("c1000 BC") should ===(YearParseError("invalid date string: 'c1000 BC'").asLeft)
     parseDate("ca.1000 BC") should ===(YearParseError("invalid date string: 'ca.1000 BC'").asLeft)
     parseDate("ca1000 BC") should ===(YearParseError("invalid date string: 'ca1000 BC'").asLeft)
+  }
+
+  it should "detect the specification of a decade" in {
+    parseDate("1920s") should ===(ExactDecade(1920, AD).asRight)
+    parseDate("1920's") should ===(ExactDecade(1920, AD).asRight)
+    parseDate("circa 1920s BC") should ===(ApproximateDecade(1920, BC).asRight)
   }
 }

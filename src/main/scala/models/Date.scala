@@ -1,23 +1,21 @@
 package models
 
+import models.DateApproximation.{DateApproximation, GENERIC, NONE}
 import models.DatingLabel.{AD, DatingLabel}
 
-trait Date {
+sealed trait Date {
   val label: DatingLabel
+  val approximation: DateApproximation
 }
 
-trait Year extends Date {
-  val yearNumber: Int
-}
+final case class Year(
+  yearNumber: Int,
+  label: DatingLabel = AD,
+  approximation: DateApproximation = NONE
+) extends Date
 
-trait Decade extends Date {
-  val decadeNumber: Int
-}
-
-final case class ExactYear(override val yearNumber: Int, override val label: DatingLabel = AD) extends Year
-
-final case class ApproximateYear(override val yearNumber: Int, override val label: DatingLabel = AD) extends Year
-
-final case class ExactDecade(override val decadeNumber: Int, override val label: DatingLabel = AD) extends Decade
-
-final case class ApproximateDecade(override val decadeNumber: Int, override val label: DatingLabel = AD) extends Decade
+final case class Decade(
+  decadeNumber: Int,
+  label: DatingLabel = AD,
+  approximation: DateApproximation = NONE
+) extends Date

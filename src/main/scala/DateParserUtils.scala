@@ -1,29 +1,33 @@
 import cats.implicits._
-import models.{ApproximateDecade, ApproximateYear, Date, DatingLabel, ExactDecade, ExactYear, Year}
-import DatingLabel._
+import models.{Date, DateApproximation, DatingLabel, Decade, Year}
+import models.DateApproximation.{EarlyVariants, GenericVariants, LateVariants, MiddleVariants}
 
 object DateParserUtils {
-  private val DatingLabelVariants = (DatingLabel.BCVariants ++ DatingLabel.ADVariants).mkString("|")
-  private val DateRegex = s"""((?:circa|c\\.|c|ca\\.|ca)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariants)?""".r
+  private val ApproximationVariants =
+    (EarlyVariants ++ MiddleVariants ++ LateVariants ++ GenericVariants).mkString("|")
+  private val DatingLabelVariants =
+    (DatingLabel.BCVariants ++ DatingLabel.ADVariants).mkString("|")
+  private val DateRegex =
+    s"""((?:$ApproximationVariants)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariants)?""".r
 
   def parseDate(dateStr: String): Either[YearParseError, Date] = dateStr.trim match {
     case DateRegex(approximatePrefix, year, decadeSuffix, null) =>
       parseSimpleYear(year).map { parsedYear =>
-        (approximatePrefix, decadeSuffix) match {
-          case (null, null) => ExactYear(parsedYear)
-          case (_, null) => ApproximateYear(parsedYear)
-          case (null, _) => ExactDecade(parsedYear)
-          case (_, _) => ApproximateDecade(parsedYear)
+        (DateApproximation.fromString(approximatePrefix), decadeSuffix) match {
+          case (None, null) => Year(parsedYear)
+          case (Some(appr), null) => Year(parsedYear, approximation = appr)
+          case (None, _) => Decade(parsedYear)
+          case (Some(appr), _) => Decade(parsedYear, approximation = appr)
         }
       }
     case DateRegex(approximatePrefix, year, decadeSuffix, label) =>
       DatingLabel.fromString(label).map { datingLabel =>
         val parsedYear = parseSimpleYear(year)
-        (approximatePrefix, decadeSuffix) match {
-          case (null, null) => parsedYear.map(ExactYear(_, datingLabel))
-          case (_, null) => parsedYear.map(ApproximateYear(_, datingLabel))
-          case (null, _) => parsedYear.map(ExactDecade(_, datingLabel))
-          case (_, _) => parsedYear.map(ApproximateDecade(_, datingLabel))
+        (DateApproximation.fromString(approximatePrefix), decadeSuffix) match {
+          case (None, null) => parsedYear.map(Year(_, datingLabel))
+          case (Some(appr), null) => parsedYear.map(Year(_, datingLabel, appr))
+          case (None, _) => parsedYear.map(Decade(_, datingLabel))
+          case (Some(appr), _) => parsedYear.map(Decade(_, datingLabel, appr))
         }
       }.getOrElse(YearParseError(s"invalid dating label: $label").asLeft)
     case _ => YearParseError(s"invalid date string: '$dateStr'").asLeft

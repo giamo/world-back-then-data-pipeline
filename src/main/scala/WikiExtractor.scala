@@ -10,8 +10,8 @@ object WikiExtractor extends App {
   val rawDf = parser.readXML(inputPath)
   val pagesDs = parser.parsePages(rawDf)
 
-  val countriesDs = parser.extractFormerCountries(pagesDs)
-  countriesDs.show(50, false)
+  val artMovementsDs = parser.extractArtMovements(pagesDs)
+  artMovementsDs.show(50, false)
 
   private def createSparkSession() =
     SparkSession.builder

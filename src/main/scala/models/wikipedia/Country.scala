@@ -1,4 +1,6 @@
-package models
+package models.wikipedia
+
+import models.Date
 
 import scala.util.matching.Regex
 

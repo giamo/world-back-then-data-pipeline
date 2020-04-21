@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream
 
 import com.databricks.spark.xml.XmlInputFormat
 import info.bliki.wiki.dump.{IArticleFilter, Siteinfo, WikiArticle, WikiXMLParser}
-import models.{Country, WikiPage}
+import models.wikipedia.{ArtMovement, Country, WikiPage}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
@@ -92,6 +92,12 @@ final class WikiParser(spark: SparkSession) extends Serializable {
   def extractFormerCountries(pagesDf: Dataset[WikiPage]): Dataset[Country] = {
     pagesDf.select($"text").as[String].flatMap { text =>
       Country.fromInfobox(text)
+    }
+  }
+
+  def extractArtMovements(pagesDf: Dataset[WikiPage]): Dataset[ArtMovement] = {
+    pagesDf.select($"text").as[String].flatMap { text =>
+      ArtMovement.fromInfobox(text)
     }
   }
 }

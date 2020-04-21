@@ -1,4 +1,4 @@
-package models
+package models.wikipedia
 
 case class WikiPage(
   title: String,

@@ -5,10 +5,13 @@ import scala.util.matching.Regex
 case class Country(
   conventionalName: String,
   name: Option[String],
-  start: Option[String],
-  end: Option[String],
+  yearStart: Option[String],
+  yearEnd: Option[String],
   capital: Option[String]
-)
+) {
+  val parsedYearStart: Option[Int] = yearStart.flatMap(Date.fromString(_).toOption.map(_.toYear))
+  val parsedYearEnd: Option[Int] = yearEnd.flatMap(Date.fromString(_).toOption.map(_.toYear))
+}
 
 object Country {
   private val nameRegex = formerCountryRegex("conventional_long_name")
@@ -17,7 +20,8 @@ object Country {
   private val yearEndRegex = formerCountryRegex("year_end")
 
   // TODO: sometimes there's a list of capitals
-  private val capitalRegex = "\\{\\{Infobox former country.*capital[\\s]*=[\\s\\[]*([^<${|\\]]+)".r
+  private val capitalRegex =
+    "\\{\\{Infobox former country.*capital[\\s]*=[\\s\\[]*([^<${|\\]]+)".r
 
   def fromInfobox(infoboxText: String): Option[Country] = {
     val cleanText = infoboxText.replace("\n", "$$")
@@ -28,7 +32,13 @@ object Country {
       val yearEnd = extractFromRegex(cleanText, yearEndRegex)
       val capital = extractFromRegex(cleanText, capitalRegex)
 
-      Country(conventionalName, commonName, yearStart, yearEnd, capital)
+      Country(
+        conventionalName,
+        commonName,
+        yearStart,
+        yearEnd,
+        capital
+      )
     }
 
   }
@@ -37,11 +47,15 @@ object Country {
     ("\\{\\{Infobox former country.*" + field + "[\\s]*=[\\s]*([^<${|]+)").r
 
   private def extractFromRegex(text: String, regex: Regex): Option[String] =
-    regex.findAllIn(text)
-      .matchData.toList
+    regex
+      .findAllIn(text)
+      .matchData
+      .toList
       .headOption
-      .flatMap { _.subgroups match {
-        case List(v) => Some(v.trim)
-        case _ => None
-      }}
+      .flatMap {
+        _.subgroups match {
+          case List(v) => Some(v.trim)
+          case _       => None
+        }
+      }
 }

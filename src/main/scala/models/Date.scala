@@ -9,19 +9,25 @@ import models.DateApproximation.{EarlyVariants, GenericVariants, LateVariants, M
 sealed trait Date {
   val label: DatingLabel
   val approximation: DateApproximation
+
+  def toYear: Int
 }
 
 final case class Year(
   yearNumber: Int,
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
-) extends Date
+) extends Date {
+  override def toYear: Int = if (label == AD) yearNumber else -1 * yearNumber
+}
 
 final case class Decade(
   decadeNumber: Int,
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
-) extends Date
+) extends Date {
+  override def toYear: Int = if (label == AD) decadeNumber else -1 * decadeNumber
+}
 
 object Date {
   private val ApproximationVariants =

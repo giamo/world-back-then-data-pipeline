@@ -1,10 +1,8 @@
 package models
 
 import cats.implicits._
-import models.Date.DateParseError
 import models.DateApproximation.{EARLY, GENERIC, LATE, MIDDLE}
 import models.DatingLabel.{AD, BC}
-import models.{Date, Decade, Year}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

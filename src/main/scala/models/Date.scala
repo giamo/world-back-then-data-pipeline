@@ -2,7 +2,7 @@ package models
 
 import cats.implicits._
 import models.DateApproximation.{DateApproximation, NONE}
-import models.DatingLabel.{AD, DatingLabel}
+import models.DatingLabel.{AD, BC, DatingLabel}
 import models.DateApproximation.{EarlyVariants, GenericVariants, LateVariants, MiddleVariants}
 
 
@@ -31,7 +31,7 @@ object Date {
   private val DateRegex =
     s"""((?:$ApproximationVariants)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariants)?""".r
 
-  def fromString(dateStr: String): Either[DateParseError, Date] = dateStr.trim match {
+  def fromString(dateStr: String): Either[ParseError, Date] = dateStr.trim match {
     case DateRegex(approximatePrefix, year, decadeSuffix, null) =>
       parseSimpleYear(year).map { parsedYear =>
         (DateApproximation.fromString(approximatePrefix), decadeSuffix) match {
@@ -62,5 +62,4 @@ object Date {
 
   private def cleanNumber(numberStr: String) = numberStr.replaceAll(",", "")
 
-  final case class DateParseError(message: String)
 }

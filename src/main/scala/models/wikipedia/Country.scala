@@ -15,18 +15,19 @@ case class Country(
   val parsedYearEnd: Option[Int] = yearEnd.flatMap(Date.fromString(_).toOption.map(_.toYear))
 }
 
-object Country {
-  private val nameRegex = formerCountryRegex("conventional_long_name")
-  private val commonNameRegex = formerCountryRegex("common_name")
-  private val yearStartRegex = formerCountryRegex("year_start")
-  private val yearEndRegex = formerCountryRegex("year_end")
+object Country extends Infobox[Country] {
+  override val infoboxName = "former country"
+  private val nameRegex = infoboxFieldRegex("conventional_long_name")
+  private val commonNameRegex = infoboxFieldRegex("common_name")
+  private val yearStartRegex = infoboxFieldRegex("year_start")
+  private val yearEndRegex = infoboxFieldRegex("year_end")
 
   // TODO: sometimes there's a list of capitals
   private val capitalRegex =
-    "\\{\\{Infobox former country.*capital[\\s]*=[\\s\\[]*([^<${|\\]]+)".r
+    ("\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s\\[]*([^<${|\\]]+)").r
 
-  def fromInfobox(infoboxText: String): Option[Country] = {
-    val cleanText = infoboxText.replace("\n", "$$")
+  override def fromInfobox(text: String): Option[Country] = {
+    val cleanText = cleanInfoboxText(text)
 
     extractFromRegex(cleanText, nameRegex).map { conventionalName =>
       val commonName = extractFromRegex(cleanText, commonNameRegex)
@@ -42,22 +43,5 @@ object Country {
         capital
       )
     }
-
   }
-
-  private def formerCountryRegex(field: String): Regex =
-    ("\\{\\{Infobox former country.*" + field + "[\\s]*=[\\s]*([^<${|]+)").r
-
-  private def extractFromRegex(text: String, regex: Regex): Option[String] =
-    regex
-      .findAllIn(text)
-      .matchData
-      .toList
-      .headOption
-      .flatMap {
-        _.subgroups match {
-          case List(v) => Some(v.trim)
-          case _       => None
-        }
-      }
 }

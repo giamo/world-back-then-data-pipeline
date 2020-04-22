@@ -93,5 +93,10 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("late 1100") should ===(Year(1100, AD, approximation = LATE).asRight)
     Date.fromString("late 1920s") should ===(Decade(1920, AD, approximation = LATE).asRight)
   }
+
+  it should "work in the presence of HTML special characters" in {
+    Date.fromString("1000&nbsp;BC") should ===(Year(1000, BC).asRight)
+    Date.fromString("2000&nbsp;&nbsp;AD") should ===(Year(2000).asRight)
+  }
 }
 

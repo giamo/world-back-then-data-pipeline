@@ -4,7 +4,7 @@ import models.Date
 
 import scala.util.matching.Regex
 
-case class Country(
+final case class Country(
   conventionalName: String,
   name: Option[String],
   yearStart: Option[String],

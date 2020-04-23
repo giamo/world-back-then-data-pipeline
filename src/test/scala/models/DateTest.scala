@@ -16,7 +16,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
   }
 
   it should "not allow non-positive years to be parsed" in {
-    Date.fromString("0") should ===(DateParseError("0 is not a valid year (must be positive)").asLeft)
+    Date.fromString("0") should ===(DateParseError("0 is not a valid year (must be a positive integer)").asLeft)
     Date.fromString("-10") should ===(DateParseError("invalid date string: '-10'").asLeft)
   }
 
@@ -97,6 +97,13 @@ final class DateTest extends AnyFlatSpec with Matchers {
   it should "work in the presence of HTML special characters" in {
     Date.fromString("1000&nbsp;BC") should ===(Year(1000, BC).asRight)
     Date.fromString("2000&nbsp;&nbsp;AD") should ===(Year(2000).asRight)
+  }
+
+  it should "recognize century dates" in {
+    Date.fromString("18th century") should ===(Century(18, AD).asRight)
+    Date.fromString("1st century BC") should ===(Century(1, BC).asRight)
+    Date.fromString("early 2nd century") should ===(Century(2, AD, approximation = EARLY).asRight)
+    Date.fromString("ca. 20th century CE") should ===(Century(20, AD, approximation = GENERIC).asRight)
   }
 }
 

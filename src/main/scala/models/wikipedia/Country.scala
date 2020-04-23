@@ -13,6 +13,11 @@ final case class Country(
 ) {
   val parsedYearStart: Option[Int] = yearStart.flatMap(Date.fromString(_).toOption.map(_.toYear))
   val parsedYearEnd: Option[Int] = yearEnd.flatMap(Date.fromString(_).toOption.map(_.toYear))
+
+  val toDateRangeString: Option[String] = for {
+    s <- yearStart
+    e <- yearEnd
+  } yield s"$s - $e"
 }
 
 object Country extends Infobox[Country] {

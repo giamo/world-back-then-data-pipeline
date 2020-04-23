@@ -1,5 +1,7 @@
 package models
 
+import cats.implicits._
+
 object DateApproximation {
   final val EarlyVariants = List("early")
   final val MiddleVariants = List("middle")
@@ -18,13 +20,16 @@ object DateApproximation {
 
   case object LATE extends DateApproximation
 
-  def fromString(approximationStr: String): Option[DateApproximation] = approximationStr match {
-    case null => None
-    case s if EarlyVariants.contains(s.trim) => Some(EARLY)
-    case s if MiddleVariants.contains(s.trim) => Some(MIDDLE)
-    case s if LateVariants.contains(s.trim) => Some(LATE)
-    case s if GenericVariants.contains(s.trim) => Some(GENERIC)
-    case _ => None
+  def fromString(
+    approximationStr: String
+  ): Either[DateParseError, DateApproximation] = approximationStr match {
+    case null                                  => NONE.asRight
+    case s if EarlyVariants.contains(s.trim)   => EARLY.asRight
+    case s if MiddleVariants.contains(s.trim)  => MIDDLE.asRight
+    case s if LateVariants.contains(s.trim)    => LATE.asRight
+    case s if GenericVariants.contains(s.trim) => GENERIC.asRight
+    case _ =>
+      DateParseError(s"invalid approximation string: '$approximationStr'").asLeft
 
   }
 

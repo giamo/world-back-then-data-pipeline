@@ -54,49 +54,23 @@ object Date {
 
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr) match {
-      case DateRegex(approximatePrefix, year, decadeSuffix, null) =>
-        parseSimpleYear(year).map { parsedYear =>
-          (DateApproximation.fromString(approximatePrefix), decadeSuffix) match {
-            case (None, null)       => Year(parsedYear)
-            case (Some(appr), null) => Year(parsedYear, approximation = appr)
-            case (None, _)          => Decade(parsedYear)
-            case (Some(appr), _)    => Decade(parsedYear, approximation = appr)
-          }
-        }
       case DateRegex(approximatePrefix, year, decadeSuffix, label) =>
-        DatingLabel
-          .fromString(label)
-          .map { datingLabel =>
-            parseSimpleYear(year).map { parsedYear =>
-              (DateApproximation.fromString(approximatePrefix), decadeSuffix) match {
-                case (None, null)       => Year(parsedYear, datingLabel)
-                case (Some(appr), null) => Year(parsedYear, datingLabel, appr)
-                case (None, _)          => Decade(parsedYear, datingLabel)
-                case (Some(appr), _)    => Decade(parsedYear, datingLabel, appr)
-              }
-            }
-          }
-          .getOrElse(DateParseError(s"invalid dating label: $label").asLeft)
-      case CenturyRegex(approximatePrefix, century, null) =>
-        parseSimpleCentury(century).map { parsedCentury =>
-          DateApproximation.fromString(approximatePrefix) match {
-            case None       => Century(parsedCentury)
-            case Some(appr) => Century(parsedCentury, approximation = appr)
+        for {
+          datingLabel <- DatingLabel.fromString(label)
+          approx <- DateApproximation.fromString(approximatePrefix)
+          parsedYear <- parseSimpleYear(year)
+        } yield {
+          decadeSuffix match {
+            case null => Year(parsedYear, datingLabel, approx)
+            case _    => Decade(parsedYear, datingLabel, approx)
           }
         }
       case CenturyRegex(approximatePrefix, century, label) =>
-        DatingLabel
-          .fromString(label)
-          .map { datingLabel =>
-            parseSimpleCentury(century).map { parsedCentury =>
-              DateApproximation.fromString(approximatePrefix) match {
-                case None => Century(parsedCentury, datingLabel)
-                case Some(appr) =>
-                  Century(parsedCentury, datingLabel, approximation = appr)
-              }
-            }
-          }
-          .getOrElse(DateParseError(s"invalid dating label: $label").asLeft)
+        for {
+          datingLabel <- DatingLabel.fromString(label)
+          approx <- DateApproximation.fromString(approximatePrefix)
+          parsedCentury <- parseSimpleCentury(century)
+        } yield Century(parsedCentury, datingLabel, approx)
       case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
 

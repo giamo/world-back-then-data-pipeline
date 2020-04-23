@@ -1,7 +1,7 @@
 package models
 
 import cats.implicits._
-import models.DateApproximation.{EARLY, GENERIC, LATE, MIDDLE}
+import models.DateApproximation.{AFTER, BEFORE, EARLY, GENERIC, LATE, MIDDLE}
 import models.DatingLabel.{AD, BC}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -63,6 +63,8 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("11 C.E.") should ===(Year(11, AD).asRight)
     Date.fromString("12 b.c.e.") should ===(Year(12, BC).asRight)
     Date.fromString("12 c.e.") should ===(Year(12, AD).asRight)
+    Date.fromString("13 BC.") should ===(Year(13, BC).asRight)
+    Date.fromString("13 CE.") should ===(Year(13, AD).asRight)
   }
 
   it should "detect the valid formats to specify generically approximate years" in {
@@ -72,6 +74,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("c 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("ca. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("ca 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("''circa'' 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
 
     // invalid formats
     Date.fromString("circa1000 BC") should ===(DateParseError("invalid date string: 'circa1000 BC'").asLeft)
@@ -90,8 +93,11 @@ final class DateTest extends AnyFlatSpec with Matchers {
   it should "detect the specification of more specific approximate dates" in {
     Date.fromString("early 1100") should ===(Year(1100, AD, approximation = EARLY).asRight)
     Date.fromString("middle 1100") should ===(Year(1100, AD, approximation = MIDDLE).asRight)
+    Date.fromString("mid 500") should ===(Year(500, AD, approximation = MIDDLE).asRight)
     Date.fromString("late 1100") should ===(Year(1100, AD, approximation = LATE).asRight)
     Date.fromString("late 1920s") should ===(Decade(1920, AD, approximation = LATE).asRight)
+    Date.fromString("before 1850") should ===(Year(1850, AD, approximation = BEFORE).asRight)
+    Date.fromString("after 200 BC") should ===(Year(200, BC, approximation = AFTER).asRight)
   }
 
   it should "work in the presence of HTML special characters" in {

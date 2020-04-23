@@ -3,10 +3,10 @@ package models
 import cats.implicits._
 
 object DatingLabel {
-  final val BCVariants =
-    List("BC", "bc", "B.C.", "b.c.", "BCE", "bce", "B.C.E.", "b.c.e.")
-  final val ADVariants =
-    List("AD", "ad", "A.D.", "a.d.", "CE", "ce", "C.E.", "c.e.")
+  final val BCVariants = List("bc", "b.c.", "bce", "b.c.e.", "bc.")
+  final val ADVariants = List("ad", "a.d.", "ce", "c.e.", "ce.")
+  final val DatingLabelVariantsStr =
+    (DatingLabel.BCVariants ++ DatingLabel.ADVariants).mkString("|")
 
   sealed trait DatingLabel {
     val label: String

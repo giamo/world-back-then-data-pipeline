@@ -4,9 +4,14 @@ import cats.implicits._
 
 object DateApproximation {
   final val EarlyVariants = List("early")
-  final val MiddleVariants = List("middle")
+  final val MiddleVariants = List("middle", "mid")
   final val LateVariants = List("late")
-  final val GenericVariants = List("circa", "c.", "c", "ca.", "ca")
+  final val BeforeVariants = List("before")
+  final val AfterVariants = List("after")
+  final val GenericVariants = List("circa", "c.", "c", "ca.", "ca", "''circa''")
+  final val ApproximationVariantsStr =
+    (EarlyVariants ++ MiddleVariants ++ LateVariants ++ BeforeVariants ++ AfterVariants ++ GenericVariants)
+      .mkString("|")
 
   sealed trait DateApproximation
 
@@ -19,6 +24,8 @@ object DateApproximation {
   case object MIDDLE extends DateApproximation
 
   case object LATE extends DateApproximation
+  case object BEFORE extends DateApproximation
+  case object AFTER extends DateApproximation
 
   def fromString(
     approximationStr: String
@@ -27,6 +34,8 @@ object DateApproximation {
     case s if EarlyVariants.contains(s.trim)   => EARLY.asRight
     case s if MiddleVariants.contains(s.trim)  => MIDDLE.asRight
     case s if LateVariants.contains(s.trim)    => LATE.asRight
+    case s if BeforeVariants.contains(s.trim)  => BEFORE.asRight
+    case s if AfterVariants.contains(s.trim)   => AFTER.asRight
     case s if GenericVariants.contains(s.trim) => GENERIC.asRight
     case _ =>
       DateParseError(s"invalid approximation string: '$approximationStr'").asLeft

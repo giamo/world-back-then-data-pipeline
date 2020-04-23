@@ -2,13 +2,8 @@ package models
 
 import cats.implicits._
 import models.DateApproximation.{DateApproximation, NONE}
-import models.DatingLabel.{AD, DatingLabel}
-import models.DateApproximation.{
-  EarlyVariants,
-  GenericVariants,
-  LateVariants,
-  MiddleVariants
-}
+import models.DatingLabel._
+import models.DateApproximation._
 import utils.HtmlUtils
 
 sealed trait Date {
@@ -42,18 +37,13 @@ final case class Century(centuryNumber: Int,
 }
 
 object Date {
-  private val ApproximationVariants =
-    (EarlyVariants ++ MiddleVariants ++ LateVariants ++ GenericVariants)
-      .mkString("|")
-  private val DatingLabelVariants =
-    (DatingLabel.BCVariants ++ DatingLabel.ADVariants).mkString("|")
   private val DateRegex =
-    s"""((?:$ApproximationVariants)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariants)?""".r
+    s"""((?:$ApproximationVariantsStr)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
   private val CenturyRegex =
-    s"""((?:$ApproximationVariants)\\s+)?([0-9]+)(?:st|nd|rd|th)[\\s]+century\\s*($DatingLabelVariants)?""".r
+    s"""((?:$ApproximationVariantsStr)\\s+)?([0-9]+)(?:st|nd|rd|th)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =
-    HtmlUtils.cleanHtmlString(dateStr) match {
+    HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
       case DateRegex(approximatePrefix, year, decadeSuffix, label) =>
         for {
           datingLabel <- DatingLabel.fromString(label)

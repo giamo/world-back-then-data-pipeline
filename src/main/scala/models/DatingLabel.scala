@@ -23,7 +23,7 @@ object DatingLabel {
   def fromString(labelStr: String): Either[DateParseError, DatingLabel] =
     labelStr match {
       case s if s == null || ADVariants.contains(s.trim) => AD.asRight
-      case s if BCVariants.contains(s.trim)              => BC.asRight
+      case s if BCVariants.contains(s.trim) => BC.asRight
       case _ =>
         DateParseError(s"invalid dating label string: '$labelStr'").asLeft
     }

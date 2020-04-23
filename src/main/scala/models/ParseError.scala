@@ -5,5 +5,3 @@ trait ParseError {
 }
 
 final case class DateParseError(override val message: String) extends ParseError
-
-final case class DateRangeParseError(override val message: String) extends ParseError

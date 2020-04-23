@@ -16,8 +16,12 @@ final class DateTest extends AnyFlatSpec with Matchers {
   }
 
   it should "not allow non-positive years to be parsed" in {
-    Date.fromString("0") should ===(DateParseError("0 is not a valid year (must be a positive integer)").asLeft)
-    Date.fromString("-10") should ===(DateParseError("invalid date string: '-10'").asLeft)
+    Date.fromString("0") should ===(
+      DateParseError("0 is not a valid year (must be a positive integer)").asLeft
+    )
+    Date.fromString("-10") should ===(
+      DateParseError("invalid date string: '-10'").asLeft
+    )
   }
 
   it should "distinguish between BC and AD dates" in {
@@ -34,8 +38,12 @@ final class DateTest extends AnyFlatSpec with Matchers {
   }
 
   it should "return an error for non-integer numbers" in {
-    Date.fromString("1.500 BC") should ===(DateParseError("invalid date string: '1.500 BC'").asLeft)
-    Date.fromString("1e2 BC") should ===(DateParseError("invalid date string: '1e2 BC'").asLeft)
+    Date.fromString("1.500 BC") should ===(
+      DateParseError("invalid date string: '1.500 BC'").asLeft
+    )
+    Date.fromString("1e2 BC") should ===(
+      DateParseError("invalid date string: '1e2 BC'").asLeft
+    )
   }
 
   it should "allow different formats and ways to specify labels" in {
@@ -69,35 +77,73 @@ final class DateTest extends AnyFlatSpec with Matchers {
 
   it should "detect the valid formats to specify generically approximate years" in {
     // valid formats
-    Date.fromString("circa 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
-    Date.fromString("c. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
-    Date.fromString("c 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
-    Date.fromString("ca. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
-    Date.fromString("ca 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
-    Date.fromString("''circa'' 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("circa 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
+    Date.fromString("c. 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
+    Date.fromString("c 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
+    Date.fromString("ca. 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
+    Date.fromString("ca 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
+    Date.fromString("''circa'' 1000 BC") should ===(
+      Year(1000, BC, approximation = GENERIC).asRight
+    )
 
     // invalid formats
-    Date.fromString("circa1000 BC") should ===(DateParseError("invalid date string: 'circa1000 BC'").asLeft)
-    Date.fromString("c.1000 BC") should ===(DateParseError("invalid date string: 'c.1000 BC'").asLeft)
-    Date.fromString("c1000 BC") should ===(DateParseError("invalid date string: 'c1000 BC'").asLeft)
-    Date.fromString("ca.1000 BC") should ===(DateParseError("invalid date string: 'ca.1000 BC'").asLeft)
-    Date.fromString("ca1000 BC") should ===(DateParseError("invalid date string: 'ca1000 BC'").asLeft)
+    Date.fromString("circa1000 BC") should ===(
+      DateParseError("invalid date string: 'circa1000 BC'").asLeft
+    )
+    Date.fromString("c.1000 BC") should ===(
+      DateParseError("invalid date string: 'c.1000 BC'").asLeft
+    )
+    Date.fromString("c1000 BC") should ===(
+      DateParseError("invalid date string: 'c1000 BC'").asLeft
+    )
+    Date.fromString("ca.1000 BC") should ===(
+      DateParseError("invalid date string: 'ca.1000 BC'").asLeft
+    )
+    Date.fromString("ca1000 BC") should ===(
+      DateParseError("invalid date string: 'ca1000 BC'").asLeft
+    )
   }
 
   it should "detect the specification of a decade" in {
     Date.fromString("1920s") should ===(Decade(1920, AD).asRight)
     Date.fromString("1920's") should ===(Decade(1920, AD).asRight)
-    Date.fromString("circa 1920s BC") should ===(Decade(1920, BC, approximation = GENERIC).asRight)
+    Date.fromString("circa 1920s BC") should ===(
+      Decade(1920, BC, approximation = GENERIC).asRight
+    )
   }
 
   it should "detect the specification of more specific approximate dates" in {
-    Date.fromString("early 1100") should ===(Year(1100, AD, approximation = EARLY).asRight)
-    Date.fromString("middle 1100") should ===(Year(1100, AD, approximation = MIDDLE).asRight)
-    Date.fromString("mid 500") should ===(Year(500, AD, approximation = MIDDLE).asRight)
-    Date.fromString("late 1100") should ===(Year(1100, AD, approximation = LATE).asRight)
-    Date.fromString("late 1920s") should ===(Decade(1920, AD, approximation = LATE).asRight)
-    Date.fromString("before 1850") should ===(Year(1850, AD, approximation = BEFORE).asRight)
-    Date.fromString("after 200 BC") should ===(Year(200, BC, approximation = AFTER).asRight)
+    Date.fromString("early 1100") should ===(
+      Year(1100, AD, approximation = EARLY).asRight
+    )
+    Date.fromString("middle 1100") should ===(
+      Year(1100, AD, approximation = MIDDLE).asRight
+    )
+    Date.fromString("mid 500") should ===(
+      Year(500, AD, approximation = MIDDLE).asRight
+    )
+    Date.fromString("late 1100") should ===(
+      Year(1100, AD, approximation = LATE).asRight
+    )
+    Date.fromString("late 1920s") should ===(
+      Decade(1920, AD, approximation = LATE).asRight
+    )
+    Date.fromString("before 1850") should ===(
+      Year(1850, AD, approximation = BEFORE).asRight
+    )
+    Date.fromString("after 200 BC") should ===(
+      Year(200, BC, approximation = AFTER).asRight
+    )
   }
 
   it should "work in the presence of HTML special characters" in {
@@ -107,9 +153,55 @@ final class DateTest extends AnyFlatSpec with Matchers {
 
   it should "recognize century dates" in {
     Date.fromString("18th century") should ===(Century(18, AD).asRight)
+    Date.fromString("the 18th century") should ===(Century(18, AD).asRight)
+    Date.fromString("the early 18th century") should ===(
+      Century(18, AD, approximation = EARLY).asRight
+    )
     Date.fromString("1st century BC") should ===(Century(1, BC).asRight)
-    Date.fromString("early 2nd century") should ===(Century(2, AD, approximation = EARLY).asRight)
-    Date.fromString("ca. 20th century CE") should ===(Century(20, AD, approximation = GENERIC).asRight)
+    Date.fromString("early 2nd century") should ===(
+      Century(2, AD, approximation = EARLY).asRight
+    )
+    Date.fromString("ca. 20th century CE") should ===(
+      Century(20, AD, approximation = GENERIC).asRight
+    )
+  }
+
+  "Parsing a date range" should "recognize a range of two hyphen-separated dates" in {
+    Date.fromString("1980-1990") should ===(
+      DateRange(from = Year(1980), to = Year(1990)).asRight
+    )
+
+    Date.fromString("100 - 150") should ===(
+      DateRange(from = Year(100), to = Year(150)).asRight
+    )
+    Date.fromString("early 1920s - late 1920s") should ===(
+      DateRange(
+        from = Decade(1920, approximation = EARLY),
+        to = Decade(1920, approximation = LATE)
+      ).asRight
+    )
+  }
+
+  it should "raise an error if more than two dates appear" in {
+    Date.fromString("1980-1990-2000") should ===(
+      DateParseError("invalid date string: '1980-1990-2000'").asLeft
+    )
+    Date.fromString("1000 BC - 900 BC - 500 BC") should ===(
+      DateParseError("invalid date string: '1000 BC - 900 BC - 500 BC'").asLeft
+    )
+  }
+
+  it should "work in the presence of HTML special characters" in {
+    Date.fromString("100BC&nbsp;-&nbsp;50BC") should ===(
+      DateRange(from = Year(100, BC), to = Year(50, BC)).asRight
+    )
+    Date.fromString(
+      "&nbsp;early 2008&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;late&nbsp;2010&nbsp;"
+    ) should ===(
+      DateRange(
+        from = Year(2008, approximation = EARLY),
+        to = Year(2010, approximation = LATE)
+      ).asRight
+    )
   }
 }
-

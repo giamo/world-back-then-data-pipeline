@@ -46,7 +46,7 @@ object Country extends Infobox[Country] {
         yearStart,
         yearEnd,
         capital
-      )
+        )
     }
   }
 }

@@ -1,9 +1,9 @@
 package models.wikipedia
 
-import models.DateRange
+import models.Date
 
 final case class ArtMovement(name: String, yearsactive: Option[String]) {
-  val parsedYearsActive = yearsactive.flatMap(DateRange.fromString(_).toOption)
+  val parsedYearsActive = yearsactive.flatMap(Date.fromString(_).toOption)
 }
 
 object ArtMovement extends Infobox[ArtMovement] {

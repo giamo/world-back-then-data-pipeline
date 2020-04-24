@@ -1,6 +1,10 @@
 package models.wikipedia
 
-final case class Settlement(name: String, coordinates: Option[String])
+final case class Settlement(name: String, coordinates: Option[String]) {
+  private val parsedCoordinates = coordinates.flatMap(Coordinates.fromTemplate)
+  val parsedLatitude: Option[Double] = parsedCoordinates.map(_.latitude)
+  val parsedLongitude: Option[Double] = parsedCoordinates.map(_.longitude)
+}
 
 object Settlement extends Infobox[Settlement] {
   override val infoboxName = "settlement"

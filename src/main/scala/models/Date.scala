@@ -46,15 +46,20 @@ final case class DateRange(from: Date, to: Date) extends Date {
 }
 
 object Date {
-  private val DateRegex =
-    s"""($ApproximationVariantsStr)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
+  private val MonthsVariantsStr =
+    List("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
+      .mkString("|")
+  private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
+
+  private val YearRegex =
+    s"""($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)\\s*)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
   private val CenturyRegex =
-    s"""(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:st|nd|rd|th)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
+    s"""(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
   private val RangeRegex = "([^-]+)\\s*\\-\\s*([^-]+)".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
-      case DateRegex(approximatePrefix, year, decadeSuffix, label) =>
+      case YearRegex(approximatePrefix, year, decadeSuffix, label) =>
         for {
           datingLabel <- DatingLabel.fromString(label)
           approx <- DateApproximation.fromString(approximatePrefix)
@@ -62,27 +67,27 @@ object Date {
         } yield {
           decadeSuffix match {
             case null => Year(parsedYear, datingLabel, approx)
-            case _ => Decade(parsedYear, datingLabel, approx)
+            case _    => Decade(parsedYear, datingLabel, approx)
           }
         }
-      case CenturyRegex(approximatePrefix, century, label) =>
+      case CenturyRegex(approximatePrefix, century, label)         =>
         for {
           datingLabel <- DatingLabel.fromString(label)
           approx <- DateApproximation.fromString(approximatePrefix)
           parsedCentury <- parseSimpleCentury(century)
         } yield Century(parsedCentury, datingLabel, approx)
-      case RangeRegex(fromDate, toDate) =>
+      case RangeRegex(fromDate, toDate)                            =>
         for {
           from <- fromString(fromDate)
           to <- fromString(toDate)
         } yield DateRange(from, to)
-      case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
+      case _                                                       => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
 
   private def parseSimpleYear(yearStr: String): Either[DateParseError, Int] =
     cleanNumber(yearStr).toInt match {
       case year if year > 0 => year.asRight
-      case _ =>
+      case _                =>
         DateParseError(
           s"$yearStr is not a valid year (must be a positive integer)"
           ).asLeft
@@ -93,7 +98,7 @@ object Date {
   ): Either[DateParseError, Int] =
     centuryStr.toInt match {
       case century if century > 0 => century.asRight
-      case _ =>
+      case _                      =>
         DateParseError(
           s"$centuryStr is not a valid century (must be a positive integer)"
           ).asLeft

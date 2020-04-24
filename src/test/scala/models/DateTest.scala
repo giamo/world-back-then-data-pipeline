@@ -77,7 +77,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
 
   it should "detect the valid formats to specify generically approximate years" in {
     // valid formats
-//    Date.fromString("circa 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("circa 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("c. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("c 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("ca. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
@@ -156,5 +156,12 @@ final class DateTest extends AnyFlatSpec with Matchers {
         to = Year(2010, approximation = LATE)
         ).asRight
       )
+  }
+
+  it should "detect a year also when month and/or day are present" in {
+    Date.fromString("8 February 266") should ===(Year(266, AD).asRight)
+    Date.fromString("10 July 420 BC") should ===(Year(420, BC).asRight)
+    Date.fromString("december 2000") should ===(Year(2000, AD).asRight)
+    Date.fromString("15th august 1900") should ===(Year(1900, AD).asRight)
   }
 }

@@ -42,14 +42,14 @@ final case class Century(
 }
 
 final case class DateRange(from: Date, to: Date) extends Date {
-  override def toYear: Int = ???
+  override def toYear: Int = from.toYear
 }
 
 object Date {
   private val DateRegex =
-    s"""((?:$ApproximationVariantsStr)\\s+)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
+    s"""($ApproximationVariantsStr)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
   private val CenturyRegex =
-    s"""(?:the\\s+)?((?:$ApproximationVariantsStr)\\s+)?([0-9]+)(?:st|nd|rd|th)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
+    s"""(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:st|nd|rd|th)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
   private val RangeRegex = "([^-]+)\\s*\\-\\s*([^-]+)".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =

@@ -1,16 +1,19 @@
 package models
 
+import java.util.regex.Pattern
+
 import cats.implicits._
 
 object DateApproximation {
   final val EarlyVariants = List("early")
-  final val MiddleVariants = List("middle", "mid")
+  final val MiddleVariants = List("middle", "mid", "mid-")
   final val LateVariants = List("late")
   final val BeforeVariants = List("before")
   final val AfterVariants = List("after")
   final val GenericVariants = List("circa", "c.", "c", "ca.", "ca", "''circa''")
-  final val ApproximationVariantsStr =
+  final val ApproximationVariantsStr: String =
     (EarlyVariants ++ MiddleVariants ++ LateVariants ++ BeforeVariants ++ AfterVariants ++ GenericVariants)
+      .map(Pattern.quote)
       .mkString("|")
 
   sealed trait DateApproximation
@@ -24,7 +27,9 @@ object DateApproximation {
   case object MIDDLE extends DateApproximation
 
   case object LATE extends DateApproximation
+
   case object BEFORE extends DateApproximation
+
   case object AFTER extends DateApproximation
 
   def fromString(
@@ -37,7 +42,7 @@ object DateApproximation {
     case s if BeforeVariants.contains(s.trim)  => BEFORE.asRight
     case s if AfterVariants.contains(s.trim)   => AFTER.asRight
     case s if GenericVariants.contains(s.trim) => GENERIC.asRight
-    case _ =>
+    case _                                     =>
       DateParseError(s"invalid approximation string: '$approximationStr'").asLeft
 
   }

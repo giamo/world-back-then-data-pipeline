@@ -5,8 +5,8 @@ import scala.util.Try
 final case class Coordinates(latitude: Double, longitude: Double, region: Option[String] = None)
 
 object Coordinates {
-  private val degreesRegex = "\\{\\{coord\\|([0-9]+)(?:\\|([0-9]+))?(?:\\|([0-9]+))?\\|(n|s)\\|([0-9]+)(?:\\|([0-9]+))?(?:\\|([0-9]+))?\\|(e|w).*\\}\\}".r
-  private val decimalRegex = "\\{\\{coord\\|([\\-]?[0-9\\.]+)(?:\\|([n|s]))?\\|([\\-]?[0-9\\.]+)(?:\\|([e|w]))?\\|.*\\}\\}".r
+  private val degreesRegex = ".*\\{\\{coord\\s*\\|\\s*([0-9]+)(?:\\s*\\|\\s*([0-9]+))?(?:\\s*\\|\\s*([0-9]+))?\\s*\\|\\s*(n|s)\\s*\\|\\s*([0-9]+)(?:\\s*\\|\\s*([0-9]+))?(?:\\s*\\|\\s*([0-9]+))?\\s*\\|\\s*(e|w).*\\}\\}".r
+  private val decimalRegex = ".*\\{\\{coord\\s*\\|\\s*([\\-]?[0-9\\.]+)(?:\\s*\\|\\s*([n|s]))?\\s*\\|\\s*([\\-]?[0-9\\.]+)(?:\\s*\\|\\s*([e|w]))?\\s*\\|\\s*.*\\}\\}".r
 
   def fromTemplate(text: String): Option[Coordinates] = text.toLowerCase match {
     case degreesRegex(degreeLat, minuteLat, secondLat, directionLat, degreeLong, minuteLong, secondLong, directionLong) =>

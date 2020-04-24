@@ -37,4 +37,22 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
       Coordinates(-55.667, 22.333).some
     )
   }
+
+  it should "accept optional spaces between separators and values" in {
+    fromTemplate("{{coord| 48.856613 | 2.352222 |type:city(2200000)_region:FR|format=dms|display=inline,title}}") should ===(
+      Coordinates(48.857, 2.352).some
+    )
+    fromTemplate("{{coord   | 40 |25| 4|N | 85 |38|56 | W   | region:US-IN|display=inline,title}}") should ===(
+      Coordinates(40.418, -85.649).some
+    )
+  }
+
+  it should "accept and ignore an arbitrary prefix in the coordinates string" in {
+    fromTemplate("<!-- {{Coord}} -->{{coord|40|25|4|N|85|38|56|W|region:US-IN}}") should ===(
+      Coordinates(40.418, -85.649).some
+    )
+    fromTemplate("<!-- {{Coord}}<br><b>coord</b> -->{{coord|46.995|N|120.549|W|region:US-WA}}") should ===(
+      Coordinates(46.995, -120.549).some
+    )
+  }
 }

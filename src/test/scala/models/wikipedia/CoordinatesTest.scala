@@ -21,6 +21,9 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
     fromTemplate("{{coord|20|N|40|E|type:adm1st_region:CD|display=inline,title}}") should ===(
       Coordinates(20, 40).some
     )
+    fromTemplate("{{coords|20|N|40|E|type:adm1st_region:CD|display=inline,title}}") should ===(
+      Coordinates(20, 40).some
+    )
   }
 
   it should "extract decimal lat and long when explicit" in {
@@ -36,6 +39,9 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
     fromTemplate("{{coord|55.6666|S|22.3333|E|region:US-WA|display=inline,title}}") should ===(
       Coordinates(-55.667, 22.333).some
     )
+    fromTemplate("{{coords|50.452222|23.396944|display=inline,title}}") should ===(
+      Coordinates(50.452, 23.397).some
+    )
   }
 
   it should "accept optional spaces between separators and values" in {
@@ -45,13 +51,16 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
     fromTemplate("{{coord   | 40 |25| 4|N | 85 |38|56 | W   | region:US-IN|display=inline,title}}") should ===(
       Coordinates(40.418, -85.649).some
     )
+    fromTemplate("{{coords|50.452222| 23.396944|display=inline,title}}") should ===(
+      Coordinates(50.452, 23.397).some
+    )
   }
 
-  it should "accept and ignore an arbitrary prefix in the coordinates string" in {
-    fromTemplate("<!-- {{Coord}} -->{{coord|40|25|4|N|85|38|56|W|region:US-IN}}") should ===(
+  it should "accept and ignore an arbitrary prefix and/or suffix in the coordinates string" in {
+    fromTemplate("<!-- {{Coord}} -->{{coord|40|25|4|N|85|38|56|W|region:US-IN}}<ref name=gnis/> ") should ===(
       Coordinates(40.418, -85.649).some
     )
-    fromTemplate("<!-- {{Coord}}<br><b>coord</b> -->{{coord|46.995|N|120.549|W|region:US-WA}}") should ===(
+    fromTemplate("<!-- {{Coord}}<br><b>coord</b> -->{{coord|46.995|N|120.549|W|region:US-WA}}qwerty") should ===(
       Coordinates(46.995, -120.549).some
     )
   }

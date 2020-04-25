@@ -9,7 +9,8 @@ final case class Country(
   name: Option[String],
   yearStart: Option[String],
   yearEnd: Option[String],
-  capital: Option[String]
+  capital: Option[String],
+  fromPage: Long
 ) {
   val parsedYearStart: Option[Int] = yearStart.flatMap(Date.fromString(_).toOption.map(_.toYear))
   val parsedYearEnd: Option[Int] = yearEnd.flatMap(Date.fromString(_).toOption.map(_.toYear))
@@ -21,7 +22,7 @@ final case class Country(
 }
 
 object Country extends Infobox[Country] {
-  override val infoboxName = "former country"
+  override val infoboxName = "(?:country|former country)"
   private val nameRegex = infoboxFieldRegex("conventional_long_name")
   private val commonNameRegex = infoboxFieldRegex("common_name")
   private val yearStartRegex = infoboxFieldRegex("year_start")
@@ -29,9 +30,9 @@ object Country extends Infobox[Country] {
 
   // TODO: sometimes there's a list of capitals
   private val capitalRegex =
-    ("\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${|]+)").r
+    ("\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${]+)").r
 
-  override def fromInfobox(text: String): Option[Country] = {
+  override def fromInfobox(text: String, fromPage: Long): Option[Country] = {
     val cleanText = cleanInfoboxText(text)
 
     extractFromRegex(cleanText, nameRegex).map { conventionalName =>
@@ -45,8 +46,9 @@ object Country extends Infobox[Country] {
         commonName,
         yearStart,
         yearEnd,
-        capital
-        )
+        capital,
+        fromPage
+      )
     }
   }
 }

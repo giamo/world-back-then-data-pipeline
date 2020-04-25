@@ -10,6 +10,7 @@ import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 
 final class WikiParser(spark: SparkSession) extends Serializable {
+
   import spark.implicits._
 
   def parsePages(rawDf: DataFrame): Dataset[WikiPage] = {
@@ -18,7 +19,7 @@ final class WikiParser(spark: SparkSession) extends Serializable {
         case class WrappedPage(var page: WikiArticle = new WikiArticle)
 
         class SetterArticleFilter(val wrappedPage: WrappedPage)
-            extends IArticleFilter {
+          extends IArticleFilter {
           def process(page: WikiArticle, siteinfo: Siteinfo) {
             wrappedPage.page = page
           }
@@ -34,14 +35,17 @@ final class WikiParser(spark: SparkSession) extends Serializable {
               new SetterArticleFilter(wrappedPage)
             )
             parser.parse()
-          } catch { case e: Exception => }
+          } catch {
+            case e: Exception =>
+          }
 
           val wikiArticle = wrappedPage.page
           if (wikiArticle.getText != null && wikiArticle.getTitle != null
-              && wikiArticle.getId != null && wikiArticle.getRevisionId != null
-              && wikiArticle.getTimeStamp != null) {
+            && wikiArticle.getId != null && wikiArticle.getRevisionId != null
+            && wikiArticle.getTimeStamp != null) {
             Some(
               WikiPage(
+                wikiArticle.getId.toLong,
                 wikiArticle.getTitle,
                 wikiArticle.getText,
                 wikiArticle.isCategory,
@@ -54,7 +58,7 @@ final class WikiParser(spark: SparkSession) extends Serializable {
           }
         }
       }
-//      .toDF("title", "text", "isCategory", "isFile", "isTemplate")
+    //      .toDF("title", "text", "isCategory", "isFile", "isTemplate")
   }
 
   def readXML(inputPath: String): DataFrame = {
@@ -89,27 +93,27 @@ final class WikiParser(spark: SparkSession) extends Serializable {
     withCategoriesDf
   }
 
-  def extractFormerCountries(pagesDf: Dataset[WikiPage]): Dataset[Country] = {
-    pagesDf.select($"text").as[String].flatMap { text =>
-      Country.fromInfobox(text)
+  def extractCountries(pagesDf: Dataset[WikiPage]): Dataset[Country] = {
+    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
+      Country.fromInfobox(text, pageId.toLong)
     }
   }
 
   def extractArtMovements(pagesDf: Dataset[WikiPage]): Dataset[ArtMovement] = {
-    pagesDf.select($"text").as[String].flatMap { text =>
-      ArtMovement.fromInfobox(text)
+    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
+      ArtMovement.fromInfobox(text, pageId.toLong)
     }
   }
 
   def extractArchaeologicalCultures(pagesDf: Dataset[WikiPage]): Dataset[ArchaeologicalCulture] = {
-    pagesDf.select($"text").as[String].flatMap { text =>
-      ArchaeologicalCulture.fromInfobox(text)
+    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
+      ArchaeologicalCulture.fromInfobox(text, pageId.toLong)
     }
   }
 
   def extractSettlements(pagesDf: Dataset[WikiPage]): Dataset[Settlement] = {
-    pagesDf.select($"text").as[String].flatMap { text =>
-      Settlement.fromInfobox(text)
+    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
+      Settlement.fromInfobox(text, pageId.toLong)
     }
   }
 }

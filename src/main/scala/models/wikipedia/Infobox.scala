@@ -5,7 +5,7 @@ import scala.util.matching.Regex
 trait Infobox[A] {
   def infoboxName: String
 
-  def fromInfobox(text: String): Option[A]
+  def fromInfobox(text: String, fromPage: Long): Option[A]
 
   def cleanInfoboxText(text: String) = text.replace("\n", "$$")
 

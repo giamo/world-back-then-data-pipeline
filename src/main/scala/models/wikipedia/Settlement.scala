@@ -1,6 +1,6 @@
 package models.wikipedia
 
-final case class Settlement(name: String, coordinates: Option[String]) {
+final case class Settlement(name: String, coordinates: Option[String], fromPage: Long) {
   private val parsedCoordinates = coordinates.flatMap(Coordinates.fromTemplate)
   val parsedLatitude: Option[Double] = parsedCoordinates.map(_.latitude)
   val parsedLongitude: Option[Double] = parsedCoordinates.map(_.longitude)
@@ -11,12 +11,12 @@ object Settlement extends Infobox[Settlement] {
   private val nameRegex = infoboxFieldRegex("name")
   private val coordinatesRegex = ("\\{\\{Infobox " + infoboxName + ".*?coordinates[\\s]*=[\\s]*([^$]+)").r
 
-  override def fromInfobox(text: String): Option[Settlement] = {
+  override def fromInfobox(text: String, fromPage: Long): Option[Settlement] = {
     val cleanText = cleanInfoboxText(text)
 
     extractFromRegex(cleanText, nameRegex).map { name =>
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
-      Settlement(name, coordinates)
+      Settlement(name, coordinates, fromPage)
     }
   }
 }

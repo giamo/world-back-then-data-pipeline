@@ -4,11 +4,11 @@ import models.Date
 
 final case class Country(
   conventionalName: String,
-  name: Option[String],
-  yearStart: Option[String],
-  yearEnd: Option[String],
-  capital: Option[String],
-  coordinates: Option[Coordinates],
+  name: Option[String] = None,
+  yearStart: Option[String] = None,
+  yearEnd: Option[String] = None,
+  capital: Option[String] = None,
+  coordinates: Option[Coordinates] = None,
   fromPage: Long
 ) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
@@ -29,8 +29,8 @@ final case class Country(
 
 object Country extends Infobox[Country] {
   override val infoboxName = "(?:country|former country)"
-  private val nameRegex = infoboxFieldRegex("conventional_long_name")
-  private val commonNameRegex = infoboxFieldRegex("common_name")
+  private val nameRegex = infoboxNameRegex("conventional_long_name")
+  private val commonNameRegex = infoboxNameRegex("common_name")
   private val yearStartRegex = infoboxFieldRegex("year_start")
   private val yearEndRegex = infoboxFieldRegex("year_end")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
@@ -50,8 +50,8 @@ object Country extends Infobox[Country] {
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
 
       Country(
-        conventionalName,
-        commonName,
+        extractFromFormattedString(conventionalName),
+        commonName.map(extractFromFormattedString),
         yearStart,
         yearEnd,
         capital,

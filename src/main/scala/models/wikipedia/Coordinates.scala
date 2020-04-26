@@ -2,7 +2,7 @@ package models.wikipedia
 
 import scala.util.Try
 
-final case class Coordinates(latitude: Double, longitude: Double, region: Option[String] = None)
+final case class Coordinates(latitude: Double, longitude: Double)
 
 object Coordinates {
   private val degreesRegex = ".*\\{\\{(?:coord|coords)\\s*\\|\\s*([0-9]+)(?:\\s*\\|\\s*([0-9]+))?(?:\\s*\\|\\s*([0-9]+))?\\s*\\|\\s*(n|s)\\s*\\|\\s*([0-9]+)(?:\\s*\\|\\s*([0-9]+))?(?:\\s*\\|\\s*([0-9]+))?\\s*\\|\\s*(e|w).*\\}\\}.*".r

@@ -12,6 +12,9 @@ trait Infobox[A] {
   def infoboxFieldRegex(field: String): Regex =
     ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<${|]+)").r
 
+  def infoboxNameRegex(field: String): Regex =
+    ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$]+)").r
+
   def infoboxCoordinatesRegex(field: String): Regex =
     ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^$]+)").r
 
@@ -27,4 +30,10 @@ trait Infobox[A] {
           case _       => None
         }
       }
+
+  private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
+  def extractFromFormattedString(text: String): String = text match {
+    case formattedStringRegex(value) => value.trim.split("\\|").last.trim
+    case _ => text
+  }
 }

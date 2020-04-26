@@ -1,13 +1,13 @@
 package models.wikipedia
 
-final case class Site(name: String, coordinates: Option[Coordinates], fromPage: Long) {
+final case class Site(name: String, coordinates: Option[Coordinates] = None, fromPage: Long) {
   val latitude: Option[Double] = coordinates.map(_.latitude)
   val longitude: Option[Double] = coordinates.map(_.longitude)
 }
 
 object Site extends Infobox[Site] {
-  override val infoboxName = "(?:settlement|ancient site)"
-  private val nameRegex = infoboxFieldRegex("name")
+  override val infoboxName = "(?:settlement|ancient site|greek dimos)"
+  private val nameRegex = infoboxNameRegex("name")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
 
   override def fromInfobox(text: String, fromPage: Long): Option[Site] = {
@@ -15,7 +15,11 @@ object Site extends Infobox[Site] {
 
     extractFromRegex(cleanText, nameRegex).map { name =>
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
-      Site(name, coordinates.flatMap(Coordinates.fromTemplate), fromPage)
+      Site(
+        extractFromFormattedString(name),
+        coordinates.flatMap(Coordinates.fromTemplate),
+        fromPage
+      )
     }
   }
 }

@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream
 
 import com.databricks.spark.xml.XmlInputFormat
 import info.bliki.wiki.dump.{IArticleFilter, Siteinfo, WikiArticle, WikiXMLParser}
-import models.wikipedia.{ArchaeologicalCulture, ArtMovement, Country, Settlement, WikiPage}
+import models.wikipedia.{ArchaeologicalCulture, ArtMovement, Country, Site, WikiPage}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
@@ -111,9 +111,9 @@ final class WikiParser(spark: SparkSession) extends Serializable {
     }
   }
 
-  def extractSettlements(pagesDf: Dataset[WikiPage]): Dataset[Settlement] = {
+  def extractSites(pagesDf: Dataset[WikiPage]): Dataset[Site] = {
     pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      Settlement.fromInfobox(text, pageId.toLong)
+      Site.fromInfobox(text, pageId.toLong)
     }
   }
 }

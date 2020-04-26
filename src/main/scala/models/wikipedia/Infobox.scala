@@ -12,6 +12,9 @@ trait Infobox[A] {
   def infoboxFieldRegex(field: String): Regex =
     ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<${|]+)").r
 
+  def infoboxCoordinatesRegex(field: String): Regex =
+    ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^$]+)").r
+
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex
       .findAllIn(text)

@@ -13,6 +13,8 @@ object SparkUtils {
       .appName(appName)
       .getOrCreate()
 
-  val parsePageTitleUdf: UserDefinedFunction = udf { (text: String) => PageTitle.fromLink(text).value }
+  val parsePageTitleUdf: UserDefinedFunction = udf { (text: String) =>
+    PageTitle.fromLink(text).map(_.value).getOrElse(text)
+  }
 
 }

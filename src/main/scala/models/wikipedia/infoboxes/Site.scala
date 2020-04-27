@@ -1,4 +1,6 @@
-package models.wikipedia
+package models.wikipedia.infoboxes
+
+import models.wikipedia.Coordinates
 
 final case class Site(name: String, coordinates: Option[Coordinates] = None, fromPage: Long) {
   val latitude: Option[Double] = coordinates.map(_.latitude)

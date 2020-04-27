@@ -4,7 +4,8 @@ import java.io.ByteArrayInputStream
 
 import com.databricks.spark.xml.XmlInputFormat
 import info.bliki.wiki.dump.{IArticleFilter, Siteinfo, WikiArticle, WikiXMLParser}
-import models.wikipedia.{ArchaeologicalCulture, ArtMovement, Country, Site, WikiPage}
+import models.wikipedia.infoboxes.{ArchaeologicalCulture, ArtMovement, Country, Site}
+import models.wikipedia.WikiPage
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}

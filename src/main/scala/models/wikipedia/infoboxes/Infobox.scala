@@ -1,4 +1,4 @@
-package models.wikipedia
+package models.wikipedia.infoboxes
 
 import scala.util.matching.Regex
 

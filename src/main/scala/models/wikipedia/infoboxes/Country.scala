@@ -1,6 +1,7 @@
-package models.wikipedia
+package models.wikipedia.infoboxes
 
 import models.Date
+import models.wikipedia.Coordinates
 
 final case class Country(
   conventionalName: String,

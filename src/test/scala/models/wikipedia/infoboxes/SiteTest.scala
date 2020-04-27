@@ -1,6 +1,7 @@
-package models.wikipedia
+package models.wikipedia.infoboxes
 
 import cats.implicits._
+import models.wikipedia.Coordinates
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

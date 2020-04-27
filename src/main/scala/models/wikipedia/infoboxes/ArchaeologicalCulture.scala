@@ -1,4 +1,4 @@
-package models.wikipedia
+package models.wikipedia.infoboxes
 
 final case class ArchaeologicalCulture(
   name: String,

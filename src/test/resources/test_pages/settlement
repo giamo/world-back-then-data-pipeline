@@ -1,0 +1,47 @@
+{{Redirect|Lahey|people with this surname|Lahey (surname)}}
+{{Redirect|Den Haag|the elm cultivar|Ulmus 'Den Haag'}}
+{{pp-move-indef}}
+{{Use dmy dates|date=February 2020}}
+{{Infobox settlement
+&lt;!-- See Template:Infobox settlement for additional fields and descriptions --&gt;
+&lt;!-- Name and transliteration --&gt;
+| name                    = The Hague
+| native_name             = {{native name|nl|Den Haag|icon=no}}
+| other_name              = {{nobold|{{native name|nl|'s-Gravenhage|icon=no}}}}
+| settlement_type         = [[List of cities in the Netherlands by province|City]] and [[List of municipalities of the Netherlands|municipality]]
+&lt;!-- Images, nickname, motto --&gt;
+| image_skyline           = {{Photomontage|position=center
+| photo1a = Den Haag Scheveningen Kurhaus 02.jpg
+| photo1b = Den Haag Binnenhof Mauritshuis 1.jpg
+| photo2a = Den Haag Binnenhof Hofvijver 1.jpg
+| photo3a = Den Haag - panoramio (261).jpg
+| photo3b = Noordeinde Palace.jpg
+   | size = 270
+   | spacing = 2
+   | color = #FFFFFF
+   | border = 0
+   | foot_montage = From top down, left to right: the [[Kurhaus of Scheveningen|Kurhaus]], the [[Mauritshuis]], [[Hofvijver]] near the [[Binnenhof]], the [[Peace Palace]] and [[Noordeinde Palace]]
+}}
+| image_alt               =
+| image_caption           =
+| image_flag              = Flag of The Hague.svg
+| flag_size               = 100x67px
+| flag_alt                =
+| image_shield            = Den Haag wapen.svg
+| shield_size             = 100x80px
+| shield_alt              =
+| nickname                = ''Residentie'' (Residence), ''Hofstad'' (Court city), ''Stad achter de duinen'' (City behind the dunes)
+| motto                   = ''Vrede en Recht'' (Peace and Justice)
+&lt;!-- Maps, coordinates --&gt;
+| image_map               = Map - NL - Municipality code 0518 (2009).svg
+| map_alt                 = Highlighted position of The Hague in a municipal map of South Holland
+| map_caption             = Location in South Holland
+| coordinates             = {{coord|52|5|N|4|19|E|region:NL|display=inline,title}}
+| coordinates_footnotes   =
+| subdivision_type        = [[Country]]
+| subdivision_name        = {{flag|Netherlands}}
+| subdivision_type1       = [[Provinces of the Netherlands|Province]]
+| subdivision_name1       = {{flag|South Holland}}
+| parts_type              = &lt;!-- defaults to: Boroughs --&gt;
+| parts_style             = coll
+}}

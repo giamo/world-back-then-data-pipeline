@@ -1,10 +1,11 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
 import com.github.giamo.wikihistory.models.Date
-import com.github.giamo.wikihistory.models.wikipedia.Coordinates
+import com.github.giamo.wikihistory.models.wikipedia.{Coordinates, WikiPage}
 
 final case class Country(
   conventionalName: String,
+  synopsis: String = "",
   name: Option[String] = None,
   yearStart: Option[String] = None,
   yearEnd: Option[String] = None,
@@ -25,7 +26,7 @@ final case class Country(
       s <- parsedYearStart
       e <- parsedYearEnd
     } yield s.toYear <= to && e.toYear >= from
-  ).getOrElse(false)
+    ).getOrElse(false)
 }
 
 object Country extends Infobox[Country] {
@@ -40,8 +41,8 @@ object Country extends Infobox[Country] {
   private val capitalRegex =
     ("\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${]+)").r
 
-  override def fromInfobox(text: String, fromPage: Long): Option[Country] = {
-    val cleanText = cleanInfoboxText(text)
+  override def fromInfobox(rawText: String, fromPage: Long): Option[Country] = {
+    val cleanText = cleanInfoboxText(rawText)
 
     extractFromRegex(cleanText, nameRegex).map { conventionalName =>
       val commonName = extractFromRegex(cleanText, commonNameRegex)
@@ -51,13 +52,14 @@ object Country extends Infobox[Country] {
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
 
       Country(
-        extractFromFormattedString(conventionalName),
-        commonName.map(extractFromFormattedString),
-        yearStart,
-        yearEnd,
-        capital,
-        coordinates.flatMap(Coordinates.fromTemplate),
-        fromPage
+        conventionalName = extractFromFormattedString(conventionalName),
+        synopsis = WikiPage.cleanSynopsis(rawText),
+        name = commonName.map(extractFromFormattedString),
+        yearStart = yearStart,
+        yearEnd = yearEnd,
+        capital = capital,
+        coordinates = coordinates.flatMap(Coordinates.fromTemplate),
+        fromPage = fromPage
       )
     }
   }

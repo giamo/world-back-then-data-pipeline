@@ -45,4 +45,12 @@ final class SiteTest extends AnyFlatSpec with Matchers {
       Site(name = "Kymi", coordinates = Some(Coordinates(38.633, 24.1)), fromPage = 3000).some
     )
   }
+
+  it should "contain coordinates even if defined outside of the infobox" in {
+    val text = readFromFile("test_pages/settlement_with_coordinates_outside")
+
+    Site.fromInfobox(text, 1000) should ===(
+      Site("The Hague", Some(Coordinates(52.083, 4.317)), 1000).some
+    )
+  }
 }

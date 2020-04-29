@@ -17,10 +17,14 @@ object Site extends Infobox[Site] {
 
     extractFromRegex(cleanText, nameRegex).map { name =>
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
+      val anyCoordinates = coordinates
+        .flatMap(Coordinates.fromTemplate)
+        .fold(Coordinates.fromTemplate(text))(Some(_))
+
       Site(
-        extractFromFormattedString(name),
-        coordinates.flatMap(Coordinates.fromTemplate),
-        fromPage
+        name = extractFromFormattedString(name),
+        coordinates = anyCoordinates,
+        fromPage = fromPage
       )
     }
   }

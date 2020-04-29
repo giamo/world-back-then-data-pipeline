@@ -51,6 +51,10 @@ object Country extends Infobox[Country] {
       val capital = extractFromRegex(cleanText, capitalRegex)
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
 
+      val anyCoordinates = coordinates
+        .flatMap(Coordinates.fromTemplate)
+        .fold(Coordinates.fromTemplate(rawText))(Some(_))
+
       Country(
         conventionalName = extractFromFormattedString(conventionalName),
         synopsis = WikiPage.cleanSynopsis(rawText),
@@ -58,7 +62,7 @@ object Country extends Infobox[Country] {
         yearStart = yearStart,
         yearEnd = yearEnd,
         capital = capital,
-        coordinates = coordinates.flatMap(Coordinates.fromTemplate),
+        coordinates = anyCoordinates,
         fromPage = fromPage
       )
     }

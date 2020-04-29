@@ -3,6 +3,7 @@ package com.github.giamo.wikihistory.models.wikipedia
 import cats.implicits._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.github.giamo.wikihistory.UnitTestUtils.readFromFile
 
 final class CoordinatesTest extends AnyFlatSpec with Matchers {
 
@@ -66,5 +67,10 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
     fromTemplate("<!-- {{Coord}}<br><b>coord</b> -->{{coord|46.995|N|120.549|W|region:US-WA}}qwerty") should ===(
       Coordinates(46.995, -120.549).some
     )
+  }
+
+  it should "get coordinates also from any point of a raw page" in {
+    val rawText = readFromFile("test_pages/former_country")
+    fromTemplate(rawText) should ===(Coordinates(-55.667, 22.333).some)
   }
 }

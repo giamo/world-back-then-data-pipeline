@@ -30,7 +30,7 @@ final case class Country(
 }
 
 object Country extends Infobox[Country] {
-  override val infoboxName = "(?:country|former country)"
+  override val infoboxName = "(?:country|former country|former subdivision)"
   private val nameRegex = infoboxLinkRegex("conventional_long_name")
   private val commonNameRegex = infoboxLinkRegex("common_name")
   private val yearStartRegex = infoboxFieldRegex("year_start")

@@ -15,9 +15,9 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     Country.fromInfobox(text, 1000) should ===(
       Country(
         conventionalName = "Colony of the Gold Coast",
-        name = Some("Afriyie Boamah"),
-        yearStart = Some("1867"),
-        yearEnd = Some("1957"),
+        name = "Afriyie Boamah".some,
+        yearStart = "1867".some,
+        yearEnd = "1957".some,
         fromPage = 1000
       ).some
     )
@@ -29,14 +29,29 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     Country.fromInfobox(text, 2000) should ===(
       Country(
         conventionalName = "Empire of Great Japan",
-        name = Some("Empire of Japan"),
-        yearStart = Some("1868&lt;ref&gt;''One can date the &quot;restoration&quot; of imperial rule from the edict of January 3, 1868.'' Jansen, p.334.&lt;/ref&gt;"),
-        yearEnd = Some("1947&lt;ref name=ndlconstitution/&gt;"),
+        name = "Empire of Japan".some,
+        yearStart = "1868&lt;ref&gt;''One can date the &quot;restoration&quot; of imperial rule from the edict of January 3, 1868.'' Jansen, p.334.&lt;/ref&gt;".some,
+        yearEnd = "1947&lt;ref name=ndlconstitution/&gt;".some,
         fromPage = 2000,
         coordinates = Coordinates(-55.667, 22.333).some,
         synopsis =
           """The Empire of Japan was the historical nation-state and great power that existed from the Meiji Restoration in 1868 to the enactment of the 1947 constitution of modern Japan.
             |Japan's rapid industrialization and militarization led to its emergence as a world power.""".stripMargin
+      ).some
+    )
+  }
+
+  it should "be parsed from a 'former subdivision' infobox" in {
+    val text = readFromFile("test_pages/former_subdivision")
+
+    Country.fromInfobox(text, 2000) should ===(
+      Country(
+        conventionalName = "Bactria",
+        name = "Bactria".some,
+        yearStart = "(2500~2000 BC)".some,
+        yearEnd = "(900~1000 AD)".some,
+        capital = "[[Bactra]]".some,
+        fromPage = 2000
       ).some
     )
   }
@@ -91,8 +106,11 @@ final class CountryTest extends AnyFlatSpec with Matchers {
   it should "be parsed from the right infoboxes regardless of case-sensitivity)" in {
     val text1 = "{{Infobox Country\n| CONVENTIONAL_LONG_NAME = Italy\n|}}"
     val text2 = "{{Infobox Former Country\n| conventional_long_name = Sparta\n|}}"
+    val text3 = "{{Infobox Former Subdivision\n| Conventional_long_name = Bactria\n|}}"
 
     Country.fromInfobox(text1, 1) should ===(Country(conventionalName = "Italy", fromPage = 1).some)
     Country.fromInfobox(text2, 2) should ===(Country(conventionalName = "Sparta", fromPage = 2).some)
+    Country.fromInfobox(text3, 3) should ===(Country(conventionalName = "Bactria", fromPage = 3).some)
   }
+
 }

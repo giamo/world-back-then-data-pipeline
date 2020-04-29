@@ -8,7 +8,7 @@ final case class Site(name: String, coordinates: Option[Coordinates] = None, fro
 }
 
 object Site extends Infobox[Site] {
-  override val infoboxName = "(?:settlement|ancient site|Greek Dimos)"
+  override val infoboxName = "(?:settlement|ancient site|greek dimos)"
   private val nameRegex = infoboxLinkRegex("name")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
 

@@ -87,4 +87,12 @@ final class CountryTest extends AnyFlatSpec with Matchers {
       ).some
     )
   }
+
+  it should "be parsed from the right infoboxes regardless of case-sensitivity)" in {
+    val text1 = "{{Infobox Country\n| CONVENTIONAL_LONG_NAME = Italy\n|}}"
+    val text2 = "{{Infobox Former Country\n| conventional_long_name = Sparta\n|}}"
+
+    Country.fromInfobox(text1, 1) should ===(Country(conventionalName = "Italy", fromPage = 1).some)
+    Country.fromInfobox(text2, 2) should ===(Country(conventionalName = "Sparta", fromPage = 2).some)
+  }
 }

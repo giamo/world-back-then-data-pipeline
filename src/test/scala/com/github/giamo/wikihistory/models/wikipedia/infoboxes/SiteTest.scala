@@ -53,4 +53,14 @@ final class SiteTest extends AnyFlatSpec with Matchers {
       Site("The Hague", Some(Coordinates(52.083, 4.317)), 1000).some
     )
   }
+
+  it should "be parsed from the right infoboxes regardless of case-sensitivity)" in {
+    val text1 = "{{Infobox Settlement\n| name = Rome\n|}}"
+    val text2 = "{{Infobox Ancient Site\n| Name = Stonehenge\n|}}"
+    val text3 = "{{Infobox Greek Dimos\n| name = Athens\n|}}"
+
+    Site.fromInfobox(text1, 1) should ===(Site(name = "Rome", fromPage = 1).some)
+    Site.fromInfobox(text2, 2) should ===(Site(name = "Stonehenge", fromPage = 2).some)
+    Site.fromInfobox(text3, 3) should ===(Site(name = "Athens", fromPage = 3).some)
+  }
 }

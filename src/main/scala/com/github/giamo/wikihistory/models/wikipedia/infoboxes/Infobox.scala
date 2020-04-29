@@ -10,13 +10,13 @@ trait Infobox[A] {
   def cleanInfoboxText(text: String) = text.replace("\n", "$$")
 
   def infoboxFieldRegex(field: String): Regex =
-    ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$|]+)").r
+    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$|]+)").r
 
   def infoboxLinkRegex(field: String): Regex =
-    ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$]+)").r
+    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$]+)").r
 
   def infoboxCoordinatesRegex(field: String): Regex =
-    ("\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^$]+)").r
+    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^$]+)").r
 
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex

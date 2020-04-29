@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 final class DateTest extends AnyFlatSpec with Matchers {
 
-  "The date parser" should "parse a simple year assuming it's AD if nt specified" in {
+  "The date parser" should "parse a simple year assuming it's AD if not specified" in {
     Date.fromString("1000") should ===(Year(1000, AD).asRight)
     Date.fromString("550") should ===(Year(550, AD).asRight)
     Date.fromString("12345") should ===(Year(12345, AD).asRight)
@@ -18,10 +18,10 @@ final class DateTest extends AnyFlatSpec with Matchers {
   it should "not allow non-positive years to be parsed" in {
     Date.fromString("0") should ===(
       DateParseError("0 is not a valid year (must be a positive integer)").asLeft
-      )
+    )
     Date.fromString("-10") should ===(
       DateParseError("invalid date string: '-10'").asLeft
-      )
+    )
   }
 
   it should "distinguish between BC and AD dates" in {
@@ -40,10 +40,10 @@ final class DateTest extends AnyFlatSpec with Matchers {
   it should "return an error for non-integer numbers" in {
     Date.fromString("1.500 BC") should ===(
       DateParseError("invalid date string: '1.500 BC'").asLeft
-      )
+    )
     Date.fromString("1e2 BC") should ===(
       DateParseError("invalid date string: '1e2 BC'").asLeft
-      )
+    )
   }
 
   it should "allow different formats and ways to specify labels" in {
@@ -101,7 +101,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("1920's") should ===(Decade(1920, AD).asRight)
     Date.fromString("circa 1920s BC") should ===(
       Decade(1920, BC, approximation = GENERIC).asRight
-      )
+    )
   }
 
   it should "detect the specification of more specific approximate dates" in {
@@ -130,15 +130,30 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("mid-20th century CE") should ===(Century(20, AD, approximation = MIDDLE).asRight)
   }
 
-  "Parsing a date range" should "recognize a range of two hyphen-separated dates" in {
+  it should "detect a year also when month and/or day are present" in {
+    Date.fromString("8 February 266") should ===(Year(266, AD).asRight)
+    Date.fromString("10 July 420 BC") should ===(Year(420, BC).asRight)
+    Date.fromString("december 2000") should ===(Year(2000, AD).asRight)
+    Date.fromString("15th august 1900") should ===(Year(1900, AD).asRight)
+  }
+
+  "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {
     Date.fromString("1980-1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
+    Date.fromString("1980~1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
     Date.fromString("100 - 150") should ===(DateRange(from = Year(100), to = Year(150)).asRight)
+    Date.fromString("100 ~ 150") should ===(DateRange(from = Year(100), to = Year(150)).asRight)
     Date.fromString("early 1920s - late 1920s") should ===(
       DateRange(
         from = Decade(1920, approximation = EARLY),
         to = Decade(1920, approximation = LATE)
-        ).asRight
-      )
+      ).asRight
+    )
+    Date.fromString("early 1920s ~ late 1920s") should ===(
+      DateRange(
+        from = Decade(1920, approximation = EARLY),
+        to = Decade(1920, approximation = LATE)
+      ).asRight
+    )
   }
 
   it should "raise an error if more than two dates appear" in {
@@ -150,18 +165,19 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("100BC&nbsp;-&nbsp;50BC") should ===(DateRange(from = Year(100, BC), to = Year(50, BC)).asRight)
     Date.fromString(
       "&nbsp;early 2008&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;late&nbsp;2010&nbsp;"
-      ) should ===(
+    ) should ===(
       DateRange(
         from = Year(2008, approximation = EARLY),
         to = Year(2010, approximation = LATE)
-        ).asRight
-      )
+      ).asRight
+    )
   }
 
-  it should "detect a year also when month and/or day are present" in {
-    Date.fromString("8 February 266") should ===(Year(266, AD).asRight)
-    Date.fromString("10 July 420 BC") should ===(Year(420, BC).asRight)
-    Date.fromString("december 2000") should ===(Year(2000, AD).asRight)
-    Date.fromString("15th august 1900") should ===(Year(1900, AD).asRight)
+  it should "correctly infer date approximation labels referring to both ends of the range" in {
+    Date.fromString("2500~2000 BC") should ===(DateRange(from = Year(2500, BC), to = Year(2000, BC)).asRight)
+    Date.fromString("1500 - 1600 AD") should ===(DateRange(from = Year(1500, AD), to = Year(1600, AD)).asRight)
+    Date.fromString("100 BC - 50 AD") should ===(DateRange(from = Year(100, BC), to = Year(50, AD)).asRight)
+    Date.fromString("100 BC - 50") should ===(DateRange(from = Year(100, BC), to = Year(50, AD)).asRight)
+    Date.fromString("150 BC - 100BC") should ===(DateRange(from = Year(150, BC), to = Year(100, BC)).asRight)
   }
 }

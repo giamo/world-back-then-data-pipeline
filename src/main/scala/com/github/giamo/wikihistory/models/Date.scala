@@ -55,7 +55,7 @@ object Date {
     s"""($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)\\s*)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
   private val CenturyRegex =
     s"""(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
-  private val RangeRegex = "([^-]+)\\s*\\-\\s*([^-]+)".r
+  private val RangeRegex = s"([^-]+?($DatingLabelVariantsStr)?)\\s*[\\-\\~]\\s*([^-]+?($DatingLabelVariantsStr)?)".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
@@ -67,30 +67,33 @@ object Date {
         } yield {
           decadeSuffix match {
             case null => Year(parsedYear, datingLabel, approx)
-            case _    => Decade(parsedYear, datingLabel, approx)
+            case _ => Decade(parsedYear, datingLabel, approx)
           }
         }
-      case CenturyRegex(approximatePrefix, century, label)         =>
+      case CenturyRegex(approximatePrefix, century, label) =>
         for {
           datingLabel <- DatingLabel.fromString(label)
           approx <- DateApproximation.fromString(approximatePrefix)
           parsedCentury <- parseSimpleCentury(century)
         } yield Century(parsedCentury, datingLabel, approx)
-      case RangeRegex(fromDate, toDate)                            =>
+      case RangeRegex(fromDate, fromLabel, toDate, toLabel) =>
+        val updatedFromDate =
+          if (fromLabel == null && toLabel != null) s"$fromDate $toLabel"
+          else fromDate
         for {
-          from <- fromString(fromDate)
+          from <- fromString(updatedFromDate)
           to <- fromString(toDate)
         } yield DateRange(from, to)
-      case _                                                       => DateParseError(s"invalid date string: '$dateStr'").asLeft
+      case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
 
   private def parseSimpleYear(yearStr: String): Either[DateParseError, Int] =
     cleanNumber(yearStr).toInt match {
       case year if year > 0 => year.asRight
-      case _                =>
+      case _ =>
         DateParseError(
           s"$yearStr is not a valid year (must be a positive integer)"
-          ).asLeft
+        ).asLeft
     }
 
   private def parseSimpleCentury(
@@ -98,10 +101,10 @@ object Date {
   ): Either[DateParseError, Int] =
     centuryStr.toInt match {
       case century if century > 0 => century.asRight
-      case _                      =>
+      case _ =>
         DateParseError(
           s"$centuryStr is not a valid century (must be a positive integer)"
-          ).asLeft
+        ).asLeft
     }
 
   private def cleanNumber(numberStr: String) = numberStr.replaceAll(",", "")

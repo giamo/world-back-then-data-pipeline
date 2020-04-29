@@ -52,10 +52,10 @@ object Date {
   private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
 
   private val YearRegex =
-    s"""($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)\\s*)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?""".r
+    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)\\s*)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?""".r
   private val CenturyRegex =
-    s"""(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?""".r
-  private val RangeRegex = s"([^-]+?($DatingLabelVariantsStr)?)\\s*[\\-\\~]\\s*([^-]+?($DatingLabelVariantsStr)?)".r
+    s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?""".r
+  private val RangeRegex = s"\\(?([^-]+?($DatingLabelVariantsStr)?)\\s*[\\-\\~]\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {

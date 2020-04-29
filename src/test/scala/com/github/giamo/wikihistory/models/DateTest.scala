@@ -137,6 +137,13 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("15th august 1900") should ===(Year(1900, AD).asRight)
   }
 
+  it should "ignore any prefix of suffix parenthesis" in {
+    Date.fromString("(early 1100)") should ===(Year(1100, AD, approximation = EARLY).asRight)
+    Date.fromString("(1000&nbsp;BC)") should ===(Year(1000, BC).asRight)
+    Date.fromString("(18th century)") should ===(Century(18, AD).asRight)
+    Date.fromString("(8 February 266)") should ===(Year(266, AD).asRight)
+  }
+
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {
     Date.fromString("1980-1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
     Date.fromString("1980~1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
@@ -179,5 +186,11 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("100 BC - 50 AD") should ===(DateRange(from = Year(100, BC), to = Year(50, AD)).asRight)
     Date.fromString("100 BC - 50") should ===(DateRange(from = Year(100, BC), to = Year(50, AD)).asRight)
     Date.fromString("150 BC - 100BC") should ===(DateRange(from = Year(150, BC), to = Year(100, BC)).asRight)
+  }
+
+  it should "ignore any prefix of suffix parenthesis" in {
+    Date.fromString("(1980-1990)") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
+    Date.fromString("(100BC&nbsp;-&nbsp;50BC)") should ===(DateRange(from = Year(100, BC), to = Year(50, BC)).asRight)
+    Date.fromString("(2500~2000 BC)") should ===(DateRange(from = Year(2500, BC), to = Year(2000, BC)).asRight)
   }
 }

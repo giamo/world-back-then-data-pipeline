@@ -1,5 +1,11 @@
 package com.github.giamo.wikihistory.models.wikipedia
 
+import java.io.StringWriter
+
+import com.github.giamo.wikihistory.utils.WikiCleanUtils
+import net.java.textilej.parser.MarkupParser
+import net.java.textilej.parser.builder.HtmlDocumentBuilder
+import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
 import org.wikiclean.WikiClean
 import org.wikiclean.languages.English
 
@@ -15,38 +21,35 @@ case class WikiPage(
 object WikiPage {
   private val wikiCleaner = new WikiClean.Builder().withLanguage(new English).build
 
-  // TODO: treat special cases of {{formatted strings}}
-  def cleanSynopsis(rawText: String): String = {
+  def getHtmlSynopsis(rawText: String): String = {
     val textUntilFirstParagraph = rawText
       .split("\n")
       .takeWhile(l => !l.trim.startsWith("="))
       .mkString("\n")
-    wikiCleaner.clean("<text xml:space=\"preserve\">" + textUntilFirstParagraph + "</text>").trim
+    val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(textUntilFirstParagraph).trim
+    val withoutReferences = removeReferences(withoutDoubleBraces)
+    val x = wikiCleaner.clean("<text xml:space=\"preserve\">" + textUntilFirstParagraph + "</text>").trim
+    convertToHtml(withoutReferences)
   }
 
-//  def htmlContent(rawText: String) = {
-    //    val wikiPatternMatcher = new WikiPatternMatcher(rawText)
-    //    val text = wikiPatternMatcher.getText
-    //    val infoboxText = wikiPatternMatcher.getInfoBox().dumpRaw()
-    //    val cleanText = cleanInfoboxText(infoboxText)
-    //    val x2 = text.substring(infoboxText.length)
+  private def convertToHtml(rawText: String): String = {
+    // newlines are not correctly converted to html
+    val preprocessedText = rawText.replaceAll("\n", "<br>")
 
+    val stringWriter = new StringWriter()
+    val htmlBuilder = new HtmlDocumentBuilder(stringWriter)
+    htmlBuilder.setEmitAsDocument(false)
 
-    //    import net.java.textilej.parser.MarkupParser
-    //    import net.java.textilej.parser.builder.HtmlDocumentBuilder
-    //    import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
-    //    val writer = new StringWriter()
-    //    import net.java.textilej.parser.MarkupParser
-    //    import net.java.textilej.parser.builder.HtmlDocumentBuilder
-    //    import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
-    //
-    //    val builder = new HtmlDocumentBuilder(writer)
-    //    builder.setEmitAsDocument(false)
-    //
-    //    val parser = new MarkupParser(new MediaWikiDialect)
-    //    parser.setBuilder(builder)
-    //    parser.parse(rawText)
-    //
-    //    val html = writer.toString
-//  }
+    val markupParser = new MarkupParser(new MediaWikiDialect)
+    markupParser.setBuilder(htmlBuilder)
+    markupParser.parse(preprocessedText)
+
+    val htmlText = stringWriter.toString
+    htmlText
+  }
+
+  private def removeReferences(s: String) = s
+    .replaceAll("(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
+    .replaceAll("\\s?\\([^a-zA-Z0-9]*\\)", "") // empty parenthesis can remain after removing references
+
 }

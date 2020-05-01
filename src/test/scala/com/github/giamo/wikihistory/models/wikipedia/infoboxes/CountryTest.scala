@@ -35,8 +35,8 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         fromPage = 2000,
         coordinates = Coordinates(-55.667, 22.333).some,
         synopsis =
-          """The Empire of Japan was the historical nation-state and great power that existed from the Meiji Restoration in 1868 to the enactment of the 1947 constitution of modern Japan.
-            |Japan's rapid industrialization and militarization led to its emergence as a world power.""".stripMargin
+          """<p>The <b>Empire of Japan</b> was the historical <a href="/wiki/nation-state" title="nation-state">nation-state</a> and <a href="/wiki/great_power" title="great power">great power</a> that existed from the <a href="/wiki/Meiji_Restoration" title="Meiji Restoration">Meiji Restoration</a> in 1868 to the enactment of the <a href="/wiki/Constitution_of_Japan" title="Constitution of Japan">1947 constitution</a> of modern <a href="/wiki/Japan" title="Japan">Japan</a>.<br/>""" +
+            """Japan's rapid <a href="/wiki/industrialization" title="industrialization">industrialization</a> and <a href="/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a href="/wiki/world_power" title="world power">world power</a>.</p>"""
       ).some
     )
   }
@@ -80,10 +80,8 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         capital = "[[Ashgabat|Ashkhabad]]".some,
         fromPage = 2000,
         synopsis =
-          """
-            |The Turkmen Soviet Socialist Republic, also commonly known as Turkmenistan or Turkmenia, was one of the constituent republics of the Soviet Union located in Central Asia existed as a republic from 1925 to 1991. Initially, on 7 August 1921, it was established as the Turkmen Oblast of the Turkestan ASSR before being made, on 13 May 1925, a separate republic of the USSR as the Turkmen SSR.
-            |Since then the borders of the Turkmenia were unchanged. On 22 August 1990, Turkmenia declared its sovereignty over Soviet laws. On 27 October 1991, it became independent as the Republic of Turkmenistan.
-            |""".stripMargin.trim
+          """<p>The <b>Turkmen Soviet Socialist Republic</b>, also commonly known as <b>Turkmenistan</b> or <b>Turkmenia</b>, was one of the <a href="/wiki/republics_of_the_Soviet_Union" title="republics of the Soviet Union">constituent republics</a> of the <a href="/wiki/Soviet_Union" title="Soviet Union">Soviet Union</a> located in <a href="/wiki/Soviet_Central_Asia" title="Soviet Central Asia">Central Asia</a> existed as a republic from 1925 to 1991. Initially, on 7 August 1921, it was established as the Turkmen Oblast of the <a href="/wiki/Turkestan_ASSR" title="Turkestan ASSR">Turkestan ASSR</a> before being made, on 13 May 1925, a separate republic of the USSR as the Turkmen SSR.<br/>""" +
+            """Since then the borders of the Turkmenia were unchanged. On 22 August 1990, Turkmenia declared its sovereignty over Soviet laws. On 27 October 1991, it became independent as the <b><a href="/wiki/Republic_of_Turkmenistan" title="Republic of Turkmenistan">Republic of Turkmenistan</a></b>.</p>"""
       ).some
     )
   }

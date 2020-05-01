@@ -49,7 +49,7 @@ object WikiPage {
   }
 
   private def removeReferences(s: String) = s
-    .replaceAll("(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
+    .replaceAll("(?s)(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
     .replaceAll("\\s?\\([^a-zA-Z0-9]*\\)", "") // empty parenthesis can remain after removing references
 
 }

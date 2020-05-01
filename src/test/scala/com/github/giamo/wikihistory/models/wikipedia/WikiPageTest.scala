@@ -10,7 +10,7 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
     WikiPage.getHtmlSynopsis("This ''is'' a '''synopsis''' with a [[link]]") should ===(
       "<p>This <i>is</i> a <b>synopsis</b> with a <a href=\"/wiki/link\" title=\"link\">link</a></p>"
     )
-    WikiPage.getHtmlSynopsis("{{Infobox something}}Lorem ipsum {{footer}") should ===(
+    WikiPage.getHtmlSynopsis("{{Infobox something}}Lorem ipsum {{footer}}") should ===(
       "<p>Lorem ipsum</p>"
     )
   }
@@ -47,6 +47,8 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
 
   it should "not contain references" in {
     WikiPage.getHtmlSynopsis("No references<ref x='y'> some reference</ref> here<ref inline/>.") should ===(
+      "<p>No references here.</p>")
+    WikiPage.getHtmlSynopsis("No references<ref x='y'> some reference\n with newline</ref> here<ref inline/>.") should ===(
       "<p>No references here.</p>")
     WikiPage.getHtmlSynopsis("No references&lt;ref&gt; some reference&lt;/ref&gt; here&lt;ref inline/&gt;.") should ===(
       "<p>No references here.</p>")

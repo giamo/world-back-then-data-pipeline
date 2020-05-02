@@ -56,6 +56,9 @@ object WikiCleanUtils {
   def removeReferences(s: String): String =
     s.replaceAll("(?s)(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
 
+  def removeFileLinks(s: String): String =
+    s.replaceAll("(?i)\\s*\\[\\[file:.*?\\]\\]\\s*", "")
+
   // empty or dirty parenthesis can be left over after removing references
   def cleanupLeftoverParenthesis(s: String): String = s
     // remove empty parenthesis

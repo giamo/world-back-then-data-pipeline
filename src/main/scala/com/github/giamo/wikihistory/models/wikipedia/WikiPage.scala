@@ -25,7 +25,8 @@ object WikiPage {
       .mkString("\n")
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(textUntilFirstParagraph).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
-    val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutReferences)
+    val withoutFileLinks = WikiCleanUtils.removeFileLinks(withoutReferences)
+    val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutFileLinks)
     convertToHtml(cleaned)
   }
 

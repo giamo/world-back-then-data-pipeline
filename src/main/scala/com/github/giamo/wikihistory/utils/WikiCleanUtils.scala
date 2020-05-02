@@ -52,4 +52,13 @@ object WikiCleanUtils {
       .replaceAll("[ ]+", " ")
       .trim
   }
+
+  def removeReferences(s: String): String =
+    s.replaceAll("(?s)(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
+
+  // empty or dirty parenthesis can remain after removing references
+  def cleanupLeftoverParenthesis(s: String): String = s
+    .replaceAll("\\s?\\([^a-zA-Z0-9]*\\)", "") // remove empty parenthesis
+//    .replaceAll("\\s?\\((\\s*[,\\.;:]).*?([,\\.;:]\\s*)\\)", "") // remove parenthesis with leftover isolated punctuation
+
 }

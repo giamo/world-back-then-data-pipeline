@@ -48,18 +48,11 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
   it should "not contain references" in {
     WikiPage.getHtmlSynopsis("No references<ref x='y'> some reference</ref> here<ref inline/>.") should ===(
       "<p>No references here.</p>")
-    WikiPage.getHtmlSynopsis("No references<ref x='y'> some reference\n with newline</ref> here<ref inline/>.") should ===(
-      "<p>No references here.</p>")
-    WikiPage.getHtmlSynopsis("No references&lt;ref&gt; some reference&lt;/ref&gt; here&lt;ref inline/&gt;.") should ===(
-      "<p>No references here.</p>")
   }
 
-  it should "not contain leftover parenthesis without any alphanumerical characters" in {
+  it should "not clean leftover parenthesis" in {
     WikiPage.getHtmlSynopsis(
-      """The region of Mauretania ({{IPAc-en|ˌ|m|ɒr|ɪ|ˈ|t|eɪ|n|i|ə|,_|ˌ|m|ɔːr|ɪ|-}}) (Maghreb)."""
-    ) should ===("""<p>The region of Mauretania (Maghreb).</p>""")
-    WikiPage.getHtmlSynopsis(
-      """The region of Mauretania ({{IPAc-en|ˌ|m|ɒr|ɪ|ˈ|t|eɪ|n|i|ə|,_|ˌ|m|ɔːr|ɪ|-}}, {{language:arab}}) (Maghreb)."""
+      """The region of Mauretania ({{IPAc-en|ˌ|m|ɒr|ɪ|ˈ|t|eɪ|n|i|ə|,_|ˌ|m|ɔːr|ɪ|-}}) () (Maghreb)."""
     ) should ===("""<p>The region of Mauretania (Maghreb).</p>""")
   }
 }

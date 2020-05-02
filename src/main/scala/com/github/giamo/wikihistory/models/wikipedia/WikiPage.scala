@@ -6,8 +6,6 @@ import com.github.giamo.wikihistory.utils.WikiCleanUtils
 import net.java.textilej.parser.MarkupParser
 import net.java.textilej.parser.builder.HtmlDocumentBuilder
 import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
-import org.wikiclean.WikiClean
-import org.wikiclean.languages.English
 
 case class WikiPage(
   id: Long,
@@ -19,7 +17,6 @@ case class WikiPage(
 )
 
 object WikiPage {
-  private val wikiCleaner = new WikiClean.Builder().withLanguage(new English).build
 
   def getHtmlSynopsis(rawText: String): String = {
     val textUntilFirstParagraph = rawText
@@ -27,9 +24,9 @@ object WikiPage {
       .takeWhile(l => !l.trim.startsWith("="))
       .mkString("\n")
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(textUntilFirstParagraph).trim
-    val withoutReferences = removeReferences(withoutDoubleBraces)
-    val x = wikiCleaner.clean("<text xml:space=\"preserve\">" + textUntilFirstParagraph + "</text>").trim
-    convertToHtml(withoutReferences)
+    val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
+    val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutReferences)
+    convertToHtml(cleaned)
   }
 
   private def convertToHtml(rawText: String): String = {
@@ -47,9 +44,5 @@ object WikiPage {
     val htmlText = stringWriter.toString
     htmlText
   }
-
-  private def removeReferences(s: String) = s
-    .replaceAll("(?s)(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
-    .replaceAll("\\s?\\([^a-zA-Z0-9]*\\)", "") // empty parenthesis can remain after removing references
 
 }

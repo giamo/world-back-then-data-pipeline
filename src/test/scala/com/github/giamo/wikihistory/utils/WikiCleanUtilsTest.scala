@@ -4,9 +4,10 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 final class WikiCleanUtilsTest extends AnyFlatSpec with Matchers {
+
   import WikiCleanUtils._
 
-  "The double braces remover" should "leave a string as-is when no full double braces are present" in {
+  "Removing double braces" should "leave a string as-is when no full double braces are present" in {
     removeDoubleBraces("normal sentence!") should ===("normal sentence!")
     removeDoubleBraces("sentence with [[link]]") should ===("sentence with [[link]]")
     removeDoubleBraces("sentence with {single braces}.") should ===("sentence with {single braces}.")
@@ -23,4 +24,30 @@ final class WikiCleanUtilsTest extends AnyFlatSpec with Matchers {
     removeDoubleBraces("all {{this should be removed}} clean") should ===("all clean")
     removeDoubleBraces("{{this should be removed}} all trimmed") should ===("all trimmed")
   }
+
+  "Removing references" should "drop all text inside <ref> tags" in {
+    removeReferences("No references<ref x='y'> some reference</ref> here<ref inline/>.") should ===(
+      "No references here."
+    )
+    removeReferences("No references<ref x='y'> some reference\n with newline</ref> here<ref inline/>.") should ===(
+      "No references here."
+    )
+    removeReferences("No references&lt;ref&gt; some reference&lt;/ref&gt; here&lt;ref inline/&gt;.") should ===(
+      "No references here."
+    )
+  }
+
+  "Cleaning leftover parenthesis" should "drop parenthesis without any alphanumerical characters" in {
+    cleanupLeftoverParenthesis("cleaned () up text") should ===("cleaned up text")
+    cleanupLeftoverParenthesis("cleaned up ( ,) text") should ===("cleaned up text")
+    cleanupLeftoverParenthesis("cleaned up text(:: ;)") should ===("cleaned up text")
+  }
+
+//  it should "drop parenthesis wihth leftover isolated punctuation inside" in {
+//    cleanupLeftoverParenthesis("cleaned up (, with cleaned parenthesis) text") should ===(
+//      "cleaned up text")
+//    cleanupLeftoverParenthesis("Asmaka (IAST: )") should ===("Asmaka")
+//    cleanupLeftoverParenthesis("Asmaka (IAST: )") should ===("Asmaka")
+//  }
+
 }

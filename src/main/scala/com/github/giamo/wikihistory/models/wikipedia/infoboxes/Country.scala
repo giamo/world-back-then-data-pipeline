@@ -16,7 +16,7 @@ final case class Country(pageId: Long, pageTitle: String, conventionalName: Stri
     for {
       s <- parsedYearStart
       e <- parsedYearEnd
-    } yield s.toYear <= to && e.toYear >= from
+    } yield s.toYear <= from && e.toYear >= to
     ).getOrElse(false)
 }
 

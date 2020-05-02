@@ -1,9 +1,15 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
 import com.github.giamo.wikihistory.models.Date
+import com.github.giamo.wikihistory.models.wikipedia.WikiPage
 
-final case class ArtMovement(name: String, yearsactive: Option[String], fromPage: Long) {
-  val parsedYearsActive = yearsactive.flatMap(Date.fromString(_).toOption)
+final case class ArtMovement(
+  pageId: Long,
+  pageTitle: String,
+  name: String,
+  yearsActive: Option[String]
+) {
+  val parsedYearsActive = yearsActive.flatMap(Date.fromString(_).toOption)
 }
 
 object ArtMovement extends Infobox[ArtMovement] {
@@ -11,12 +17,17 @@ object ArtMovement extends Infobox[ArtMovement] {
   private val nameRegex = infoboxFieldRegex("name")
   private val yearsRegex = infoboxFieldRegex("yearsactive")
 
-  override def fromInfobox(text: String, fromPage: Long): Option[ArtMovement] = {
-    val cleanText = cleanInfoboxText(text)
+  override def fromInfobox(page: WikiPage): Option[ArtMovement] = {
+    val cleanText = cleanInfoboxText(page.text)
 
     extractFromRegex(cleanText, nameRegex).map { name =>
       val yearsActive = extractFromRegex(cleanText, yearsRegex)
-      ArtMovement(name, yearsActive, fromPage)
+      ArtMovement(
+        pageId = page.id,
+        pageTitle = page.title,
+        name = name,
+        yearsActive = yearsActive
+      )
     }
   }
 }

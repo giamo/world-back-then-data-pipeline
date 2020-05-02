@@ -94,33 +94,18 @@ final class WikiParser(spark: SparkSession) extends Serializable {
     withCategoriesDf
   }
 
-  def extractCountries(pagesDf: Dataset[WikiPage]): Dataset[Country] = {
-    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      Country.fromInfobox(text, pageId.toLong)
-    }
-  }
+  def extractCountries(pagesDf: Dataset[WikiPage]): Dataset[Country] =
+    pagesDf.flatMap(Country.fromInfobox)
 
-  def extractArtMovements(pagesDf: Dataset[WikiPage]): Dataset[ArtMovement] = {
-    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      ArtMovement.fromInfobox(text, pageId.toLong)
-    }
-  }
+  def extractArtMovements(pagesDf: Dataset[WikiPage]): Dataset[ArtMovement] =
+    pagesDf.flatMap(ArtMovement.fromInfobox)
 
-  def extractArchaeologicalCultures(pagesDf: Dataset[WikiPage]): Dataset[ArchaeologicalCulture] = {
-    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      ArchaeologicalCulture.fromInfobox(text, pageId.toLong)
-    }
-  }
+  def extractArchaeologicalCultures(pagesDf: Dataset[WikiPage]): Dataset[ArchaeologicalCulture] =
+    pagesDf.flatMap(ArchaeologicalCulture.fromInfobox)
 
-  def extractSites(pagesDf: Dataset[WikiPage]): Dataset[Site] = {
-    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      Site.fromInfobox(text, pageId.toLong)
-    }
-  }
+  def extractSites(pagesDf: Dataset[WikiPage]): Dataset[Site] =
+    pagesDf.flatMap(Site.fromInfobox)
 
-  def extractPhilosophers(pagesDf: Dataset[WikiPage]): Dataset[Philosopher] = {
-    pagesDf.select($"text", $"id").as[(String, String)].flatMap { case (text, pageId) =>
-      Philosopher.fromInfobox(text, pageId.toLong)
-    }
-  }
+  def extractPhilosophers(pagesDf: Dataset[WikiPage]): Dataset[Philosopher] =
+    pagesDf.flatMap(Philosopher.fromInfobox)
 }

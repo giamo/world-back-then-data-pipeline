@@ -3,16 +3,7 @@ package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 import com.github.giamo.wikihistory.models.Date
 import com.github.giamo.wikihistory.models.wikipedia.{Coordinates, WikiPage}
 
-final case class Country(
-  conventionalName: String,
-  synopsis: String = "",
-  name: Option[String] = None,
-  yearStart: Option[String] = None,
-  yearEnd: Option[String] = None,
-  capital: Option[String] = None,
-  coordinates: Option[Coordinates] = None,
-  fromPage: Long
-) {
+final case class Country(pageId: Long, pageTitle: String, conventionalName: String, synopsis: String = "", name: Option[String] = None, yearStart: Option[String] = None, yearEnd: Option[String] = None, capital: Option[String] = None, coordinates: Option[Coordinates] = None) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
   val parsedYearEnd: Option[Date] = yearEnd.flatMap(Date.fromString(_).toOption)
 
@@ -41,7 +32,8 @@ object Country extends Infobox[Country] {
   private val capitalRegex =
     ("(?i)\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${]+)").r
 
-  override def fromInfobox(rawText: String, fromPage: Long): Option[Country] = {
+  override def fromInfobox(page: WikiPage): Option[Country] = {
+    val rawText = page.text
     val cleanText = cleanInfoboxText(rawText)
 
     extractFromRegex(cleanText, nameRegex).map { conventionalName =>
@@ -56,14 +48,15 @@ object Country extends Infobox[Country] {
         .fold(Coordinates.fromTemplate(rawText))(Some(_))
 
       Country(
+        pageId = page.id,
+        pageTitle = page.title,
         conventionalName = extractFromFormattedString(conventionalName),
         synopsis = WikiPage.getHtmlSynopsis(rawText),
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,
         capital = capital,
-        coordinates = anyCoordinates,
-        fromPage = fromPage
+        coordinates = anyCoordinates
       )
     }
   }

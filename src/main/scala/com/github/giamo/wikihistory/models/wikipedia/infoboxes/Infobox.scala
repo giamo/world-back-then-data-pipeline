@@ -1,11 +1,13 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
+import com.github.giamo.wikihistory.models.wikipedia.WikiPage
+
 import scala.util.matching.Regex
 
 trait Infobox[A] {
   def infoboxName: String
 
-  def fromInfobox(text: String, fromPage: Long): Option[A]
+  def fromInfobox(page: WikiPage): Option[A]
 
   def cleanInfoboxText(text: String) = text.replace("\n", "$$")
 

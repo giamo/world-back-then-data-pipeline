@@ -1,11 +1,14 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
+import com.github.giamo.wikihistory.models.wikipedia.WikiPage
+
 final case class Philosopher(
+  pageId: Long,
+  pageTitle: String,
   name: String,
   birthDate: Option[String],
   birthPlace: Option[String],
-  schoolTraditions: Option[String],
-  fromPage: Long
+  schoolTraditions: Option[String]
 )
 
 object Philosopher extends Infobox[Philosopher] {
@@ -15,8 +18,8 @@ object Philosopher extends Infobox[Philosopher] {
   private val birthPlaceRegex = infoboxLinkRegex("birth_place")
   private val schoolTraditionRegex = infoboxLinkRegex("school_tradition")
 
-  override def fromInfobox(text: String, fromPage: Long): Option[Philosopher] = {
-    val cleanText = cleanInfoboxText(text)
+  override def fromInfobox(page: WikiPage): Option[Philosopher] = {
+    val cleanText = cleanInfoboxText(page.text)
 
     extractFromRegex(cleanText, nameRegex).map { name =>
       val birthDate = extractFromRegex(cleanText, birthDateRegex)
@@ -24,11 +27,12 @@ object Philosopher extends Infobox[Philosopher] {
       val schoolTraditions = extractFromRegex(cleanText, schoolTraditionRegex)
 
       Philosopher(
-        extractFromFormattedString(name),
-        birthDate,
-        birthPlace,
-        schoolTraditions,
-        fromPage
+        pageId = page.id,
+        pageTitle = page.title,
+        name = extractFromFormattedString(name),
+        birthDate = birthDate,
+        birthPlace = birthPlace,
+        schoolTraditions = schoolTraditions
       )
     }
   }

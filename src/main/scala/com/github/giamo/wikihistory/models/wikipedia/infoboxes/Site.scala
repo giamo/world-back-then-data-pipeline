@@ -1,8 +1,13 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
-import com.github.giamo.wikihistory.models.wikipedia.Coordinates
+import com.github.giamo.wikihistory.models.wikipedia.{Coordinates, WikiPage}
 
-final case class Site(name: String, coordinates: Option[Coordinates] = None, fromPage: Long) {
+final case class Site(
+  pageId: Long,
+  pageTitle: String,
+  name: String,
+  coordinates: Option[Coordinates] = None
+) {
   val latitude: Option[Double] = coordinates.map(_.latitude)
   val longitude: Option[Double] = coordinates.map(_.longitude)
 }
@@ -12,7 +17,8 @@ object Site extends Infobox[Site] {
   private val nameRegex = infoboxLinkRegex("name")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
 
-  override def fromInfobox(text: String, fromPage: Long): Option[Site] = {
+  override def fromInfobox(page: WikiPage): Option[Site] = {
+    val text = page.text
     val cleanText = cleanInfoboxText(text)
 
     extractFromRegex(cleanText, nameRegex).map { name =>
@@ -22,9 +28,10 @@ object Site extends Infobox[Site] {
         .fold(Coordinates.fromTemplate(text))(Some(_))
 
       Site(
+        pageId = page.id,
+        pageTitle = page.title,
         name = extractFromFormattedString(name),
-        coordinates = anyCoordinates,
-        fromPage = fromPage
+        coordinates = anyCoordinates
       )
     }
   }

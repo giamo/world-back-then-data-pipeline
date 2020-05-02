@@ -43,11 +43,17 @@ final class WikiCleanUtilsTest extends AnyFlatSpec with Matchers {
     cleanupLeftoverParenthesis("cleaned up text(:: ;)") should ===("cleaned up text")
   }
 
-//  it should "drop parenthesis wihth leftover isolated punctuation inside" in {
-//    cleanupLeftoverParenthesis("cleaned up (, with cleaned parenthesis) text") should ===(
-//      "cleaned up text")
-//    cleanupLeftoverParenthesis("Asmaka (IAST: )") should ===("Asmaka")
-//    cleanupLeftoverParenthesis("Asmaka (IAST: )") should ===("Asmaka")
-//  }
+  it should "drop parenthesis with punctuation or a space as the first or last character" in {
+    cleanupLeftoverParenthesis("cleaned up (, with cleaned parenthesis) text") should ===(
+      "cleaned up text")
+    cleanupLeftoverParenthesis("cleaned up (with cleaned parenthesis, ) text") should ===(
+      "cleaned up text")
+    cleanupLeftoverParenthesis("Corinth (; Kórinthos; Doric Greek: Kórinthos)") should ===("Corinth")
+    cleanupLeftoverParenthesis("The Odrysian Kingdom (; Ancient Greek: ; ) was") should ===("The Odrysian Kingdom was")
+    cleanupLeftoverParenthesis("AAA (: BBB)") should ===("AAA")
+    cleanupLeftoverParenthesis("Atropatene (in Old Iranian: Ātṛpātakāna; in Greek: )") should ===("Atropatene")
+    cleanupLeftoverParenthesis("The Parthian Empire ( 247 BC – 224 AD)") should ===("The Parthian Empire")
+    cleanupLeftoverParenthesis("Corinth or Korinthos ( or )") should ===("Corinth or Korinthos")
+  }
 
 }

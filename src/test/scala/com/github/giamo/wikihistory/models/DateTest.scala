@@ -161,6 +161,23 @@ final class DateTest extends AnyFlatSpec with Matchers {
         to = Decade(1920, approximation = LATE)
       ).asRight
     )
+    Date.fromString("c. 8,000 – c. 2,700 BC") should ===(
+      DateRange(
+        from = Year(8000, BC, approximation = GENERIC),
+        to = Year(2700, BC, approximation = GENERIC)
+      ).asRight
+    )
+    Date.fromString("''circa'' 450 BCE. — ''circa'' 1 BCE     ") should ===(
+      DateRange(
+        from = Year(450, BC, approximation = GENERIC),
+        to = Year(1, BC, approximation = GENERIC)
+      ).asRight
+    )
+  }
+
+  it should "recognize other formats to specify a range" in {
+    Date.fromString("from 100 to 50 BC") should ===(DateRange(from = Year(100, BC), to = Year(50, BC)).asRight)
+    Date.fromString("5,440 BCE to 460 CE") should ===(DateRange(from = Year(5440, BC), to = Year(460, AD)).asRight)
   }
 
   it should "raise an error if more than two dates appear" in {

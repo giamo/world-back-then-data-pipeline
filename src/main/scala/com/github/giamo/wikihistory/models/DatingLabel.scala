@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 import cats.implicits._
 
 object DatingLabel {
-  final val BCVariants = List("bc", "b.c.", "bce", "b.c.e.", "bc.")
+  final val BCVariants = List("bc", "b.c.", "bce", "b.c.e.", "bc.", "bce.")
   final val ADVariants = List("ad", "a.d.", "ce", "c.e.", "ce.")
   final val DatingLabelVariantsStr =
     (DatingLabel.BCVariants ++ DatingLabel.ADVariants).map(Pattern.quote).mkString("|")

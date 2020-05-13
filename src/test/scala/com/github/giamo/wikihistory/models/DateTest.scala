@@ -1,7 +1,7 @@
 package com.github.giamo.wikihistory.models
 
 import cats.implicits._
-import com.github.giamo.wikihistory.models.DateApproximation.{AFTER, ALTERNATIVES, BEFORE, EARLY, GENERIC, LATE, MIDDLE}
+import com.github.giamo.wikihistory.models.DateApproximation.{AFTER, BEFORE, EARLY, GENERIC, LATE, MIDDLE}
 import com.github.giamo.wikihistory.models.DatingLabel.{AD, BC}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -83,6 +83,8 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("ca. 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("ca 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("''circa'' 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("{{circa}} 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("~1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
 
     Date.fromString("c1257") should ===(Year(1257, AD, GENERIC).asRight)
     Date.fromString("circa1000 BC") should ===(Year(1000, BC, GENERIC).asRight)

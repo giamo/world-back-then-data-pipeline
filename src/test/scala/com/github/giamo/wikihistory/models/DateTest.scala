@@ -1,7 +1,7 @@
 package com.github.giamo.wikihistory.models
 
 import cats.implicits._
-import com.github.giamo.wikihistory.models.DateApproximation.{AFTER, BEFORE, EARLY, GENERIC, LATE, MIDDLE}
+import com.github.giamo.wikihistory.models.DateApproximation.{AFTER, ALTERNATIVES, BEFORE, EARLY, GENERIC, LATE, MIDDLE}
 import com.github.giamo.wikihistory.models.DatingLabel.{AD, BC}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -142,6 +142,15 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("(1000&nbsp;BC)") should ===(Year(1000, BC).asRight)
     Date.fromString("(18th century)") should ===(Century(18, AD).asRight)
     Date.fromString("(8 February 266)") should ===(Year(266, AD).asRight)
+  }
+
+  it should "allow the specification of uncertainty between two or more dates (either/or/or)" in {
+    Date.fromString("107/108") should ===(UncertainYear(List(Year(107), Year(108))).asRight)
+    Date.fromString("107 / 108") should ===(UncertainYear(List(Year(107), Year(108))).asRight)
+    Date.fromString("450 / 440 BC") should ===(UncertainYear(List(Year(450, BC), Year(440, BC))).asRight)
+    Date.fromString("450 or 440 BC") should ===(UncertainYear(List(Year(450, BC), Year(440, BC))).asRight)
+    Date.fromString("either 450 or 440 or 430 BC") should ===(UncertainYear(List(Year(450, BC), Year(440, BC), Year(430, BC))).asRight)
+    Date.fromString("428/427 or 424/423 BC") should ===(UncertainYear(List(Year(428, BC), Year(427, BC), Year(424, BC), Year(423, BC))).asRight)
   }
 
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {

@@ -8,6 +8,8 @@ import com.github.giamo.wikihistory.utils.HtmlUtils
 
 sealed trait Date {
   def toYear: Int
+
+  def isBefore(other: Date): Boolean = this.toYear < other.toYear
 }
 
 sealed trait SpecificDate extends Date {
@@ -15,12 +17,18 @@ sealed trait SpecificDate extends Date {
   val approximation: DateApproximation
 }
 
+sealed trait UncertainDate extends Date
+
 final case class Year(
   yearNumber: Int,
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
 ) extends SpecificDate {
   override def toYear: Int = if (label == AD) yearNumber else -1 * yearNumber
+}
+
+final case class UncertainYear(variants: List[Date]) extends UncertainDate {
+  override def toYear: Int = variants.map(_.toYear).min
 }
 
 final case class Decade(
@@ -57,6 +65,7 @@ object Date {
     s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?""".r
   private val RangeRegex =
     s"\\(?(?:\\s*from\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:\\-|\\~|\\—|to)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
+  private val AlternativesRegex = s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
 
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
@@ -85,6 +94,19 @@ object Date {
           from <- fromString(updatedFromDate)
           to <- fromString(toDate)
         } yield DateRange(from, to)
+      case AlternativesRegex(fromDate, fromLabel, toDate, toLabel) =>
+        val updatedFromDate =
+          if (fromLabel == null && toLabel != null) s"$fromDate $toLabel"
+          else fromDate
+        for {
+          from <- fromString(updatedFromDate)
+          to <- fromString(toDate)
+        } yield (from, to) match {
+          case (UncertainYear(alts1), UncertainYear(alts2)) => UncertainYear(alts1 ++ alts2)
+          case (UncertainYear(alts), d) => UncertainYear(alts :+ d)
+          case (d, UncertainYear(alts)) => UncertainYear(List(d) ++ alts)
+          case (d1, d2) => UncertainYear(List(d1, d2))
+        }
       case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
 

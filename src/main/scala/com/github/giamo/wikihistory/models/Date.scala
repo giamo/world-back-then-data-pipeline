@@ -60,11 +60,11 @@ object Date {
   private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
 
   private val YearRegex =
-    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)\\s*)?([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?""".r
+    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr),?|(?:$MonthsVariantsStr)\\s+[0-9]+(?:$CardinalVariants)?,?)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?""".r
   private val CenturyRegex =
     s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?""".r
   private val WikiDateRegex =
-    s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?\\{\\{[^\\|]+\\|\\s*(?:[a-z]+=[a-z]+\\|\\s*)?([0-9]+)\\s*(?:\\}\\}|\\|.*)".r
+    s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?\\{\\{[^\\|]+\\|\\s*(?:[a-z]+=[a-z]+\\|\\s*)?([^\\|]+)\\s*(?:\\}\\}|\\|.*)".r
   private val AlternativesRegex =
     s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
   private val RangeRegex =

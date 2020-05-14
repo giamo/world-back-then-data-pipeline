@@ -132,11 +132,15 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("mid-20th century CE") should ===(Century(20, AD, approximation = MIDDLE).asRight)
   }
 
-  it should "detect a year also when month and/or day are present" in {
+  it should "detect a year also when month and/or day are present (in different formats)" in {
     Date.fromString("8 February 266") should ===(Year(266, AD).asRight)
     Date.fromString("10 July 420 BC") should ===(Year(420, BC).asRight)
     Date.fromString("december 2000") should ===(Year(2000, AD).asRight)
     Date.fromString("15th august 1900") should ===(Year(1900, AD).asRight)
+    Date.fromString("September 27, 1960") should ===(Year(1960, AD).asRight)
+    Date.fromString("May 7th,1988") should ===(Year(1988, AD).asRight)
+    Date.fromString("December 2019") should ===(Year(2019, AD).asRight)
+    Date.fromString("January, 1945") should ===(Year(1945, AD).asRight)
   }
 
   it should "ignore any prefix of suffix parenthesis" in {
@@ -164,6 +168,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("{{birth year and age| 1953}}") should ===(Year(1953).asRight)
     Date.fromString("{{birth date and age|df=yes|1954|1|17}}") should ===(Year(1954).asRight)
     Date.fromString("{{abbr|c.|circa}} {{birth year and age|1955}}") should ===(Year(1955, approximation = GENERIC).asRight)
+    Date.fromString("{{birth date| September 27, 1960}}") should ===(Year(1960).asRight)
   }
 
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {

@@ -73,6 +73,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("12 c.e.") should ===(Year(12, AD).asRight)
     Date.fromString("13 BC.") should ===(Year(13, BC).asRight)
     Date.fromString("13 CE.") should ===(Year(13, AD).asRight)
+    Date.fromString("1739 [[Common Era|CE]]") should ===(Year(1739, AD).asRight)
   }
 
   it should "detect the valid formats to specify generically approximate years" in {
@@ -84,7 +85,9 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("ca 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("''circa'' 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
     Date.fromString("{{circa}} 1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("[[Circa|c.]] 11th century") should ===(Century(11, approximation = GENERIC).asRight)
     Date.fromString("~1000 BC") should ===(Year(1000, BC, approximation = GENERIC).asRight)
+    Date.fromString("est. 700 AD") should ===(Year(700, AD, approximation = GENERIC).asRight)
 
     Date.fromString("c1257") should ===(Year(1257, AD, GENERIC).asRight)
     Date.fromString("circa1000 BC") should ===(Year(1000, BC, GENERIC).asRight)
@@ -141,6 +144,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("May 7th,1988") should ===(Year(1988, AD).asRight)
     Date.fromString("December 2019") should ===(Year(2019, AD).asRight)
     Date.fromString("January, 1945") should ===(Year(1945, AD).asRight)
+    Date.fromString("November , 1273") should ===(Year(1273, AD).asRight)
   }
 
   it should "ignore any prefix of suffix parenthesis" in {
@@ -157,6 +161,8 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("450 or 440 BC") should ===(UncertainYear(List(Year(450, BC), Year(440, BC))).asRight)
     Date.fromString("either 450 or 440 or 430 BC") should ===(UncertainYear(List(Year(450, BC), Year(440, BC), Year(430, BC))).asRight)
     Date.fromString("428/427 or 424/423 BC") should ===(UncertainYear(List(Year(428, BC), Year(427, BC), Year(424, BC), Year(423, BC))).asRight)
+    Date.fromString("1849, 1854 or 1855") should ===(UncertainYear(List(Year(1849), Year(1854), Year(1855))).asRight)
+    Date.fromString("1849, 1854") should ===(UncertainYear(List(Year(1849), Year(1854))).asRight)
   }
 
   it should "support the different versions of wiki date format" in {
@@ -167,8 +173,42 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("{{Birth year|1952}}") should ===(Year(1952).asRight)
     Date.fromString("{{birth year and age| 1953}}") should ===(Year(1953).asRight)
     Date.fromString("{{birth date and age|df=yes|1954|1|17}}") should ===(Year(1954).asRight)
-    Date.fromString("{{abbr|c.|circa}} {{birth year and age|1955}}") should ===(Year(1955, approximation = GENERIC).asRight)
+    Date.fromString("{{birth date and age|df= yes|1929|01|12}}") should ===(Year(1929).asRight)
     Date.fromString("{{birth date| September 27, 1960}}") should ===(Year(1960).asRight)
+    Date.fromString("{{nowrap|{{birth date and age|df=yes|1961|9|15}}}}") should ===(Year(1961).asRight)
+    Date.fromString("{{bda|1937|4|25}}") should ===(Year(1937).asRight)
+    Date.fromString("{{b-da|3 March 1946}}") should ===(Year(1946).asRight)
+    Date.fromString("{{Date|18th February 1963}}") should ===(Year(1963).asRight)
+    Date.fromString("{{bya|1956}}") should ===(Year(1956).asRight)
+    Date.fromString("{{floruit|87 BC}}") should ===(Year(87, BC).asRight)
+  }
+
+  it should "support wiki date formats with approximations" in {
+    Date.fromString("{{abbr|c.|circa}} {{birth year and age|1955}}") should ===(Year(1955, approximation = GENERIC).asRight)
+    Date.fromString("{{circa|398 BCE}}") should ===(Year(398, BC, approximation = GENERIC).asRight)
+//    Date.fromString("{{circa|lk=no}} 1080") should ===(Year(398, BC, approximation = GENERIC).asRight)
+  }
+
+  it should "allow wiki text after a date" in {
+    Date.fromString("24 October 1924|") should ===(Year(1924).asRight)
+    Date.fromString("1718 (baptism 8 May 1719)") should ===(Year(1718).asRight)
+    Date.fromString(
+      "1936 <!-- {{birth date and age|YYYY|MM|DD}} for living persons, {{dirth date|YYYY|MM|DD}} for deceased -->"
+    ) should ===(Year(1936).asRight)
+    Date.fromString(
+      "{{birth year and age|1972}} <!--Only the year unless the exact date is already WIDELY published, as per [[WP:DOB]]. -->"
+    ) should ===(Year(1972).asRight)
+    Date.fromString("{{birth year and age|1950}} <!--comment") should ===(Year(1950).asRight)
+    Date.fromString("c. 446 BC<ref{{cite book}}") should ===(Year(446, BC, approximation = GENERIC).asRight)
+    Date.fromString("c. 760, [[Shiraz]], [[Persia]]") should ===(Year(760, approximation = GENERIC).asRight)
+    Date.fromString("1365 [[hijri]]<small>(1945)</small>") should ===(Year(1365).asRight)
+    Date.fromString("{{circa|586 BC}}|death_date=600") should ===(Year(586, BC, approximation = GENERIC).asRight)
+    Date.fromString("{{circa|494 BC}}<ref>{{Cite book}}") should ===(Year(494, BC, approximation = GENERIC).asRight)
+    Date.fromString("1493 or 1494<ref name=birth_date>") should ===(UncertainYear(List(Year(1493), Year(1494))).asRight)
+    Date.fromString("1116AD<ref name=\"arabency\">") should ===(Year(1116).asRight)
+    Date.fromString("October 24, 1906<ref name=Oxford/>") should ===(Year(1906).asRight)
+    Date.fromString("1875<br") should ===(Year(1875).asRight)
+    Date.fromString("{{Birth-year|1775}} ({{nobold|}})") should ===(Year(1775).asRight)
   }
 
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {

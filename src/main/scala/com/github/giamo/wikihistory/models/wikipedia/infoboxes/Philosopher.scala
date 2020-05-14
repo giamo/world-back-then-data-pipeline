@@ -1,6 +1,8 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
-import com.github.giamo.wikihistory.models.wikipedia.WikiPage
+import com.github.giamo.wikihistory.models.wikipedia.{PageTitle, WikiPage}
+
+import scala.collection.immutable
 
 final case class Philosopher(
   pageId: Long,
@@ -36,4 +38,9 @@ object Philosopher extends Infobox[Philosopher] {
       )
     }
   }
+
+  def parseSchoolTraditions(schoolTraditions: String): List[PageTitle] = schoolTraditions
+    .split(",")
+    .toList
+    .flatMap(PageTitle.fromLink)
 }

@@ -58,18 +58,33 @@ object Date {
     List("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
       .mkString("|")
   private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
+  private val RegexTail = "(?:\\s*(?:\\||\\(.*\\)|<!\\-\\-|<ref|,?\\s*\\[\\[|<br).*)?"
 
   private val YearRegex =
-    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr),?|(?:$MonthsVariantsStr)\\s+[0-9]+(?:$CardinalVariants)?,?)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?""".r
+    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)(?:\\s*,)?|(?:$MonthsVariantsStr)(?:\\s+[0-9]+(?:$CardinalVariants)?)?(?:\\s*,)?)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val CenturyRegex =
-    s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?""".r
+    s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val WikiDateRegex =
-    s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?\\{\\{[^\\|]+\\|\\s*(?:[a-z]+=[a-z]+\\|\\s*)?([^\\|]+)\\s*(?:\\}\\}|\\|.*)".r
+    s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?.*?\\{\\{\\s*(circa|birth|bda|b-da|date|bya|floruit)[a-z\\s\\-]*\\|\\s*(?:[a-z]+\\s*=\\s*[a-z]+\\|\\s*)?([^\\|\\}]+)\\s*(?:\\}\\}|\\|.*)$RegexTail".r
   private val AlternativesRegex =
-    s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
+    s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/|,)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
   private val RangeRegex =
-    s"\\(?(?:\\s*from\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:\\-|\\~|\\—|to)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?".r
+    s"\\(?(?:\\s*from\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:\\-|\\~|\\—|\\sto)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
 
+  // TODO: cover more corner cases
+  // ex: 1936 , August 3rd
+  // ex: 1988-07-05
+  // ex: {{circa|lk=no}} 1080
+  // ex: 331/0 BC
+  // ex: {{OldStyleDate|1 October|1912|18 September}}
+  // ex: c.  AD 20 – 30
+  // ex: Unclear, 6th – 4th century BCE
+  // ex: 1000 CE / 390 AH
+  // ex: {{abbr|c.|circa}} 832
+  // ex: (206 [[Islamic calendar|AH]]  (821/2 AD))
+  // ex: 3649 KE 779 AH or 1377 CE
+  // ex: Unknown (/Uncertain), 6th Century – 4th century BC
+  // ex: [[1937]]
   def fromString(dateStr: String): Either[ParseError, Date] =
     HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
       case YearRegex(approximatePrefix, year, decadeSuffix, label) =>
@@ -89,9 +104,18 @@ object Date {
           approx <- DateApproximation.fromString(approximatePrefix)
           parsedCentury <- parseSimpleCentury(century)
         } yield Century(parsedCentury, datingLabel, approx)
-      case WikiDateRegex(approximatePrefix, date) =>
-        if (approximatePrefix == null) fromString(date)
-        else fromString(s"$approximatePrefix $date")
+      case WikiDateRegex(approximatePrefix, wikiPrefix, date) =>
+        if (approximatePrefix != null) fromString(s"$approximatePrefix $date")
+        else if (GenericVariants.contains(wikiPrefix.toLowerCase)) fromString(s"$wikiPrefix $date")
+        else fromString(date)
+      case RangeRegex(fromDate, fromLabel, toDate, toLabel) =>
+        val updatedFromDate =
+          if (fromLabel == null && toLabel != null) s"$fromDate $toLabel"
+          else fromDate
+        for {
+          from <- fromString(updatedFromDate)
+          to <- fromString(toDate)
+        } yield DateRange(from, to)
       case AlternativesRegex(fromDate, fromLabel, toDate, toLabel) =>
         val updatedFromDate =
           if (fromLabel == null && toLabel != null) s"$fromDate $toLabel"
@@ -105,14 +129,6 @@ object Date {
           case (d, UncertainYear(alts)) => UncertainYear(List(d) ++ alts)
           case (d1, d2) => UncertainYear(List(d1, d2))
         }
-      case RangeRegex(fromDate, fromLabel, toDate, toLabel) =>
-        val updatedFromDate =
-          if (fromLabel == null && toLabel != null) s"$fromDate $toLabel"
-          else fromDate
-        for {
-          from <- fromString(updatedFromDate)
-          to <- fromString(toDate)
-        } yield DateRange(from, to)
       case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
 

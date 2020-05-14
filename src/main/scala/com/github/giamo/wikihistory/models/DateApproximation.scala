@@ -10,7 +10,7 @@ object DateApproximation {
   final val LateVariants = List("late")
   final val BeforeVariants = List("before")
   final val AfterVariants = List("after")
-  final val GenericVariants = List("circa", "c.", "c", "ca.", "ca", "''circa''", "{{circa}}", "{{c.}}", "~")
+  final val GenericVariants = List("circa", "c.", "c", "ca.", "ca", "''circa''", "{{circa}}", "{{c.}}", "[[circa|c.]]", "~", "est", "est.")
   final val ApproximationVariantsStr: String =
     (EarlyVariants ++ MiddleVariants ++ LateVariants ++ BeforeVariants ++ AfterVariants ++ GenericVariants)
       .map(Pattern.quote)

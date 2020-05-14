@@ -155,6 +155,17 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("428/427 or 424/423 BC") should ===(UncertainYear(List(Year(428, BC), Year(427, BC), Year(424, BC), Year(423, BC))).asRight)
   }
 
+  it should "support the different versions of wiki date format" in {
+    Date.fromString("{{Birth date and age|1950|6|11}}") should ===(Year(1950).asRight)
+    Date.fromString("{{birth-date and age|1950|6|11}}") should ===(Year(1950).asRight)
+    Date.fromString("{{birth date and age|1950|6|11}}") should ===(Year(1950).asRight)
+    Date.fromString("{{Birth date|1951|6|11|df=y}}") should ===(Year(1951).asRight)
+    Date.fromString("{{Birth year|1952}}") should ===(Year(1952).asRight)
+    Date.fromString("{{birth year and age| 1953}}") should ===(Year(1953).asRight)
+    Date.fromString("{{birth date and age|df=yes|1954|1|17}}") should ===(Year(1954).asRight)
+    Date.fromString("{{abbr|c.|circa}} {{birth year and age|1955}}") should ===(Year(1955, approximation = GENERIC).asRight)
+  }
+
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {
     Date.fromString("1980-1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
     Date.fromString("1980~1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)

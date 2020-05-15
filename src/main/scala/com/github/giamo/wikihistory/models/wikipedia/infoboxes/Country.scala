@@ -11,11 +11,12 @@ final case class Country(
   name: Option[String] = None,
   yearStart: Option[String] = None,
   yearEnd: Option[String] = None,
-  capital: List[Capital] = List.empty,
+  capitals: List[String] = List.empty,
   coordinates: Option[Coordinates] = None
 ) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
   val parsedYearEnd: Option[Date] = yearEnd.flatMap(Date.fromString(_).toOption)
+  val parsedCapitals: List[Capital] = capitals.map(Capital.fromString)
 
   val toDateRangeString: Option[String] = for {
     s <- yearStart
@@ -61,7 +62,7 @@ object Country extends Infobox[Country] {
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,
-        capital = capitals.map(Capital.fromString),
+        capitals = capitals,
         coordinates = anyCoordinates
       )
     }

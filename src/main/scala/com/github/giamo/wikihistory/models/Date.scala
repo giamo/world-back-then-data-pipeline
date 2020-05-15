@@ -6,6 +6,8 @@ import com.github.giamo.wikihistory.models.DatingLabel._
 import com.github.giamo.wikihistory.models.DateApproximation._
 import com.github.giamo.wikihistory.utils.HtmlUtils
 
+import scala.util.{Success, Try}
+
 sealed trait Date {
   def toYear: Int
 
@@ -133,8 +135,8 @@ object Date {
     }
 
   private def parseSimpleYear(yearStr: String): Either[DateParseError, Int] =
-    cleanNumber(yearStr).toInt match {
-      case year if year > 0 => year.asRight
+    Try(cleanNumber(yearStr).toInt) match {
+      case Success(year) if year > 0 => year.asRight
       case _ =>
         DateParseError(
           s"$yearStr is not a valid year (must be a positive integer)"

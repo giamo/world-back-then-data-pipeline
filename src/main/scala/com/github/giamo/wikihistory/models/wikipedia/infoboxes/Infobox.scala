@@ -11,22 +11,15 @@ trait Infobox[A] {
 
   def cleanInfoboxText(text: String): String = text.replace("\n", "$$")
 
-  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^$]+)").r
+  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)").r
 
-  def infoboxLinkRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^<$]+)").r
+  def infoboxLinkRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^<$]+)").r
 
-  def infoboxCoordinatesRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^$]+)").r
+  def infoboxCoordinatesRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)").r
 
-  private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
-  def extractFromFormattedString(text: String): String = text match {
-    case formattedStringRegex(value) => value.trim.split("\\|").last.trim
-    case _ => text
-  }
+  def infoboxListRegex(field: String): Regex =
+    (genericInfoboxField(field) + "\\s*=\\s*\\{\\{plainlist\\s*\\|\\s*(.+?)\\}\\}\\s*\\$\\$\\s*(?:\\}\\}$|\\|)").r
 
-  private def genericInfoboxField(field: String) = "(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
-}
-
-object Infobox {
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex
       .findAllIn(text)
@@ -39,4 +32,33 @@ object Infobox {
           case _       => None
         }
       }
+
+  def extractListFromRegex(text: String, field: String): List[String] =
+    infoboxListRegex(field)
+      .findAllIn(text)
+      .matchData.toList
+      .headOption
+      .map { r =>
+        r.group(1)
+          .split("\\|?\\s*\\*")
+          .map(_.replaceAll("\\$\\$", "").trim)
+          .toList
+          .filter(_.nonEmpty)
+      }
+      .getOrElse(
+        extractFromRegex(text, infoboxFieldRegex(field))
+          .map {
+            case s if s == null || s.trim.isEmpty => List.empty
+            case s => List(s.trim)
+          }
+          .getOrElse(List.empty[String])
+      )
+
+  private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
+  def extractFromFormattedString(text: String): String = text match {
+    case formattedStringRegex(value) => value.trim.split("\\|").last.trim
+    case _ => text
+  }
+
+  private def genericInfoboxField(field: String) = "(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
 }

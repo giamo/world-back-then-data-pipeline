@@ -3,7 +3,17 @@ package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 import com.github.giamo.wikihistory.models.Date
 import com.github.giamo.wikihistory.models.wikipedia.{Coordinates, WikiPage}
 
-final case class Country(pageId: Long, pageTitle: String, conventionalName: String, synopsis: String = "", name: Option[String] = None, yearStart: Option[String] = None, yearEnd: Option[String] = None, capital: Option[String] = None, coordinates: Option[Coordinates] = None) {
+final case class Country(
+  pageId: Long,
+  pageTitle: String,
+  conventionalName: String,
+  synopsis: String = "",
+  name: Option[String] = None,
+  yearStart: Option[String] = None,
+  yearEnd: Option[String] = None,
+  capital: List[String] = List.empty,
+  coordinates: Option[Coordinates] = None
+) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
   val parsedYearEnd: Option[Date] = yearEnd.flatMap(Date.fromString(_).toOption)
 
@@ -28,12 +38,6 @@ object Country extends Infobox[Country] {
   private val yearEndRegex = infoboxFieldRegex("year_end")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
 
-  // TODO: sometimes there's a list of capitals
-  private val capitalRegex =
-    ("(?i)\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${]+)").r
-
-  import Infobox._
-
   override def fromInfobox(page: WikiPage): Option[Country] = {
     val rawText = page.text
     val cleanText = cleanInfoboxText(rawText)
@@ -42,7 +46,7 @@ object Country extends Infobox[Country] {
       val commonName = extractFromRegex(cleanText, commonNameRegex)
       val yearStart = extractFromRegex(cleanText, yearStartRegex)
       val yearEnd = extractFromRegex(cleanText, yearEndRegex)
-      val capital = extractFromRegex(cleanText, capitalRegex)
+      val capital = extractListFromRegex(cleanText, "capital")
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
 
       val anyCoordinates = coordinates

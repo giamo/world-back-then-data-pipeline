@@ -20,6 +20,8 @@ object Philosopher extends Infobox[Philosopher] {
   private val birthPlaceRegex = infoboxLinkRegex("birth_place")
   private val schoolTraditionRegex = infoboxLinkRegex("school_tradition")
 
+  import Infobox._
+
   override def fromInfobox(page: WikiPage): Option[Philosopher] = {
     val cleanText = cleanInfoboxText(page.text)
 

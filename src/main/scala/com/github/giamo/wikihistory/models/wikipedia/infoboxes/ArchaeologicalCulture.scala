@@ -21,12 +21,12 @@ final case class ArchaeologicalCulture(
 }
 
 object ArchaeologicalCulture extends Infobox[ArchaeologicalCulture] {
-  def apply(s: String): Option[ArchaeologicalCulture] = ???
-
   override val infoboxName = "archaeological culture"
   private val nameRegex = infoboxFieldRegex("name")
   private val regionRegex = infoboxFieldRegex("region")
   private val datesRegex = infoboxFieldRegex("dates")
+
+  import Infobox._
 
   override def fromInfobox(page: WikiPage): Option[ArchaeologicalCulture] = {
     val cleanText = cleanInfoboxText(page.text)

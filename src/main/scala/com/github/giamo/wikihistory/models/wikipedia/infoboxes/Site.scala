@@ -17,6 +17,8 @@ object Site extends Infobox[Site] {
   private val nameRegex = infoboxLinkRegex("name")
   private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
 
+  import Infobox._
+
   override def fromInfobox(page: WikiPage): Option[Site] = {
     val text = page.text
     val cleanText = cleanInfoboxText(text)

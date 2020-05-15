@@ -9,17 +9,24 @@ trait Infobox[A] {
 
   def fromInfobox(page: WikiPage): Option[A]
 
-  def cleanInfoboxText(text: String) = text.replace("\n", "$$")
+  def cleanInfoboxText(text: String): String = text.replace("\n", "$$")
 
-  def infoboxFieldRegex(field: String): Regex =
-    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$|]+)").r
+  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^$]+)").r
 
-  def infoboxLinkRegex(field: String): Regex =
-    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^<$]+)").r
+  def infoboxLinkRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^<$]+)").r
 
-  def infoboxCoordinatesRegex(field: String): Regex =
-    ("(?i)\\{\\{Infobox " + infoboxName + ".*?" + field + "[\\s]*=[\\s]*([^$]+)").r
+  def infoboxCoordinatesRegex(field: String): Regex = (genericInfoboxField(field) + "[\\s]*=[\\s]*([^$]+)").r
 
+  private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
+  def extractFromFormattedString(text: String): String = text match {
+    case formattedStringRegex(value) => value.trim.split("\\|").last.trim
+    case _ => text
+  }
+
+  private def genericInfoboxField(field: String) = "(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
+}
+
+object Infobox {
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex
       .findAllIn(text)
@@ -32,10 +39,4 @@ trait Infobox[A] {
           case _       => None
         }
       }
-
-  private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
-  def extractFromFormattedString(text: String): String = text match {
-    case formattedStringRegex(value) => value.trim.split("\\|").last.trim
-    case _ => text
-  }
 }

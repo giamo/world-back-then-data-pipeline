@@ -32,6 +32,8 @@ object Country extends Infobox[Country] {
   private val capitalRegex =
     ("(?i)\\{\\{Infobox " + infoboxName + ".*?capital[\\s]*=[\\s]*([^<${]+)").r
 
+  import Infobox._
+
   override def fromInfobox(page: WikiPage): Option[Country] = {
     val rawText = page.text
     val cleanText = cleanInfoboxText(rawText)

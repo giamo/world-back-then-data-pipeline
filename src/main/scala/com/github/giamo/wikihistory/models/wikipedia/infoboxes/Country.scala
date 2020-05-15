@@ -1,7 +1,7 @@
 package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
 import com.github.giamo.wikihistory.models.Date
-import com.github.giamo.wikihistory.models.wikipedia.{Coordinates, WikiPage}
+import com.github.giamo.wikihistory.models.wikipedia.{Capital, Coordinates, WikiPage}
 
 final case class Country(
   pageId: Long,
@@ -11,7 +11,7 @@ final case class Country(
   name: Option[String] = None,
   yearStart: Option[String] = None,
   yearEnd: Option[String] = None,
-  capital: List[String] = List.empty,
+  capital: List[Capital] = List.empty,
   coordinates: Option[Coordinates] = None
 ) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
@@ -46,7 +46,7 @@ object Country extends Infobox[Country] {
       val commonName = extractFromRegex(cleanText, commonNameRegex)
       val yearStart = extractFromRegex(cleanText, yearStartRegex)
       val yearEnd = extractFromRegex(cleanText, yearEndRegex)
-      val capital = extractListFromRegex(cleanText, "capital")
+      val capitals = extractListFromRegex(cleanText, "capital")
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
 
       val anyCoordinates = coordinates
@@ -61,7 +61,7 @@ object Country extends Infobox[Country] {
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,
-        capital = capital,
+        capital = capitals.map(Capital.fromString),
         coordinates = anyCoordinates
       )
     }

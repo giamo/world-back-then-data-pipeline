@@ -4,7 +4,7 @@ import cats.implicits._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import com.github.giamo.wikihistory.UnitTestUtils.readFromFile
-import com.github.giamo.wikihistory.models.wikipedia.Coordinates
+import com.github.giamo.wikihistory.models.wikipedia.{Capital, Coordinates}
 import com.github.giamo.wikihistory.UnitTestUtils._
 
 final class CountryTest extends AnyFlatSpec with Matchers {
@@ -54,7 +54,7 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         name = "Bactria".some,
         yearStart = "(2500~2000 BC)".some,
         yearEnd = "(900~1000 AD)".some,
-        capital = List("[[Bactra]]")
+        capital = List(Capital("[[Bactra]]"))
       ).some
     )
   }
@@ -86,7 +86,7 @@ final class CountryTest extends AnyFlatSpec with Matchers {
             """Since then the borders of the Turkmenia were unchanged. On 22 August 1990, Turkmenia declared its sovereignty over Soviet laws. On 27 October 1991, it became independent as the <b><a href="/wiki/Republic_of_Turkmenistan" title="Republic of Turkmenistan">Republic of Turkmenistan</a></b>.</p>""", name = "Turkmen Soviet Socialist Republic".some,
         yearStart = "1925".some,
         yearEnd = "1991".some,
-        capital = List("[[Ashgabat|Ashkhabad]]")
+        capital = List(Capital("[[Ashgabat|Ashkhabad]]"))
       ).some
     )
   }

@@ -17,8 +17,6 @@ object ArtMovement extends Infobox[ArtMovement] {
   private val nameRegex = infoboxFieldRegex("name")
   private val yearsRegex = infoboxFieldRegex("yearsactive")
 
-  import Infobox._
-
   override def fromInfobox(page: WikiPage): Option[ArtMovement] = {
     val cleanText = cleanInfoboxText(page.text)
 

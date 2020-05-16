@@ -26,8 +26,6 @@ object ArchaeologicalCulture extends Infobox[ArchaeologicalCulture] {
   private val regionRegex = infoboxFieldRegex("region")
   private val datesRegex = infoboxFieldRegex("dates")
 
-  import Infobox._
-
   override def fromInfobox(page: WikiPage): Option[ArchaeologicalCulture] = {
     val cleanText = cleanInfoboxText(page.text)
 

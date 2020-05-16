@@ -2,7 +2,7 @@ package com.github.giamo.wikihistory.models.wikipedia
 
 import java.io.StringWriter
 
-import com.github.giamo.wikihistory.utils.WikiCleanUtils
+import com.github.giamo.wikihistory.utils.{HtmlUtils, WikiCleanUtils}
 import net.java.textilej.parser.MarkupParser
 import net.java.textilej.parser.builder.HtmlDocumentBuilder
 import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
@@ -30,7 +30,7 @@ object WikiPage {
     convertToHtml(cleaned)
   }
 
-  private def convertToHtml(rawText: String): String = {
+  def convertToHtml(rawText: String): String = {
     // newlines are not correctly converted to html
     val preprocessedText = rawText.replaceAll("\n", "<br>")
 
@@ -43,7 +43,7 @@ object WikiPage {
     markupParser.parse(preprocessedText)
 
     val htmlText = stringWriter.toString
-    htmlText
+    htmlText.replaceAll("""href="/wiki/""", """target="_blank" href="https://en.wikipedia.org/wiki/""")
   }
 
 }

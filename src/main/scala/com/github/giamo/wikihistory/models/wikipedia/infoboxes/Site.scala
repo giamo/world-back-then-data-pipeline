@@ -14,8 +14,8 @@ final case class Site(
 
 object Site extends Infobox[Site] {
   override val infoboxName = "(?:settlement|ancient site|greek dimos)"
-  private val nameRegex = infoboxLinkRegex("name")
-  private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
+  private val nameRegex = infoboxFieldRegex("name")
+  private val coordinatesRegex = infoboxFieldRegex("coordinates")
 
   override def fromInfobox(page: WikiPage): Option[Site] = {
     val text = page.text

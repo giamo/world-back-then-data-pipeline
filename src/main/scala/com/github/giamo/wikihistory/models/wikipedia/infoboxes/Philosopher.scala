@@ -15,10 +15,10 @@ final case class Philosopher(
 
 object Philosopher extends Infobox[Philosopher] {
   override val infoboxName = "philosopher"
-  private val nameRegex = infoboxLinkRegex("name")
+  private val nameRegex = infoboxFieldRegex("name")
   private val birthDateRegex = infoboxFieldRegex("birth_date")
-  private val birthPlaceRegex = infoboxLinkRegex("birth_place")
-  private val schoolTraditionRegex = infoboxLinkRegex("school_tradition")
+  private val birthPlaceRegex = infoboxFieldRegex("birth_place")
+  private val schoolTraditionRegex = infoboxFieldRegex("school_tradition")
 
   override def fromInfobox(page: WikiPage): Option[Philosopher] = {
     val cleanText = cleanInfoboxText(page.text)

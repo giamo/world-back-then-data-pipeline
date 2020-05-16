@@ -20,7 +20,9 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         conventionalName = "Colony of the Gold Coast",
         name = "Afriyie Boamah".some,
         yearStart = "1867".some,
-        yearEnd = "1957".some
+        yearEnd = "1957".some,
+        governmentType = "[[Colonialism|Colonial]]".some,
+        imageCoat = "Badge of the Gold Coast (1877-1957).svg".some
       ).some
     )
   }
@@ -37,7 +39,9 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         synopsis =
           """<p>The <b>Empire of Japan</b> was the historical <a href="/wiki/nation-state" title="nation-state">nation-state</a> and <a href="/wiki/great_power" title="great power">great power</a> that existed from the <a href="/wiki/Meiji_Restoration" title="Meiji Restoration">Meiji Restoration</a> in 1868 to the enactment of the <a href="/wiki/Constitution_of_Japan" title="Constitution of Japan">1947 constitution</a> of modern <a href="/wiki/Japan" title="Japan">Japan</a>.<br/>""" +
             """Japan's rapid <a href="/wiki/industrialization" title="industrialization">industrialization</a> and <a href="/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a href="/wiki/world_power" title="world power">world power</a>.</p>""", name = "Empire of Japan".some, yearStart = "1868&lt;ref&gt;''One can date the &quot;restoration&quot; of imperial rule from the edict of January 3, 1868.'' Jansen, p.334.&lt;/ref&gt;".some, yearEnd = "1947&lt;ref name=ndlconstitution/&gt;".some,
-        coordinates = Coordinates(-55.667, 22.333).some
+        coordinates = Coordinates(-55.667, 22.333).some,
+        imageCoat = "Imperial Seal of Japan.svg".some,
+        religion = "Buddhism".some
       ).some
     )
   }
@@ -54,7 +58,7 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         name = "Bactria".some,
         yearStart = "(2500~2000 BC)".some,
         yearEnd = "(900~1000 AD)".some,
-        capitals = List("[[Bactra]]")
+        capital = "[[Bactra]]".some
       ).some
     )
   }
@@ -86,7 +90,10 @@ final class CountryTest extends AnyFlatSpec with Matchers {
             """Since then the borders of the Turkmenia were unchanged. On 22 August 1990, Turkmenia declared its sovereignty over Soviet laws. On 27 October 1991, it became independent as the <b><a href="/wiki/Republic_of_Turkmenistan" title="Republic of Turkmenistan">Republic of Turkmenistan</a></b>.</p>""", name = "Turkmen Soviet Socialist Republic".some,
         yearStart = "1925".some,
         yearEnd = "1991".some,
-        capitals = List("[[Ashgabat|Ashkhabad]]")
+        capital = "[[Ashgabat|Ashkhabad]]".some,
+        governmentType = "[[Unitary state|Unitary]] [[Marxism-Leninism|Marxist-Leninist]] [[one-party state|single-party]] [[Soviet republic (system of government)|Soviet]] [[socialist state|socialist republic]] (1925–1990)&lt;br&gt;[[Unitary state|Unitary]] [[Presidential system|presidential]] [[republic]] (1990–1991)".some,
+        imageCoat = "Emblem of the Turkmen SSR.svg".some,
+        commonLanguages = "[[Turkmen language|Turkmen]]{{·}}[[Russian language|Russian]]".some
       ).some
     )
   }
@@ -103,7 +110,9 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         name = Some("Afriyie Boamah"),
         yearStart = Some("1867"),
         yearEnd = Some("1957"),
-        coordinates = Coordinates(-55.667, 22.333).some
+        coordinates = Coordinates(-55.667, 22.333).some,
+        governmentType = "[[Colonialism|Colonial]]".some,
+        imageCoat = "Badge of the Gold Coast (1877-1957).svg".some
       ).some
     )
   }

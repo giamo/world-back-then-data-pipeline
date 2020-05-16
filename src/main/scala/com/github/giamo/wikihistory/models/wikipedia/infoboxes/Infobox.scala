@@ -11,11 +11,7 @@ trait Infobox[A] {
 
   def cleanInfoboxText(text: String): String = text.replace("\n", "$$")
 
-  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)").r
-
-  def infoboxLinkRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^<$]+)").r
-
-  def infoboxCoordinatesRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)").r
+  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)\\$\\$\\s*(?:\\}\\}|\\|)").r
 
   def infoboxListRegex(field: String): Regex =
     (genericInfoboxField(field) + "\\s*=\\s*\\{\\{plainlist\\s*\\|\\s*(.+?)\\}\\}\\s*\\$\\$\\s*(?:\\}\\}$|\\|)").r

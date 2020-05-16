@@ -11,12 +11,16 @@ final case class Country(
   name: Option[String] = None,
   yearStart: Option[String] = None,
   yearEnd: Option[String] = None,
-  capitals: List[String] = List.empty,
-  coordinates: Option[Coordinates] = None
+  capital: Option[String] = None,
+  coordinates: Option[Coordinates] = None,
+  governmentType: Option[String] = None,
+  imageCoat: Option[String] = None,
+  commonLanguages: Option[String] = None,
+  religion: Option[String] = None
 ) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
   val parsedYearEnd: Option[Date] = yearEnd.flatMap(Date.fromString(_).toOption)
-  val parsedCapitals: List[Capital] = capitals.map(Capital.fromString)
+//  val parsedCapitals: List[Capital] = capitals.map(Capital.fromString)
 
   val toDateRangeString: Option[String] = for {
     s <- yearStart
@@ -33,11 +37,16 @@ final case class Country(
 
 object Country extends Infobox[Country] {
   override val infoboxName = "(?:country|former country|former subdivision)"
-  private val nameRegex = infoboxLinkRegex("conventional_long_name")
-  private val commonNameRegex = infoboxLinkRegex("common_name")
+  private val nameRegex = infoboxFieldRegex("conventional_long_name")
+  private val commonNameRegex = infoboxFieldRegex("common_name")
   private val yearStartRegex = infoboxFieldRegex("year_start")
   private val yearEndRegex = infoboxFieldRegex("year_end")
-  private val coordinatesRegex = infoboxCoordinatesRegex("coordinates")
+  private val coordinatesRegex = infoboxFieldRegex("coordinates")
+  private val capitalRegex = infoboxFieldRegex("capital")
+  private val governmentRegex = infoboxFieldRegex("government_type")
+  private val imageCoatRegex = infoboxFieldRegex("image_coat")
+  private val languagesRegex = infoboxFieldRegex("common_languages")
+  private val religionRegex = infoboxFieldRegex("religion")
 
   override def fromInfobox(page: WikiPage): Option[Country] = {
     val rawText = page.text
@@ -47,8 +56,12 @@ object Country extends Infobox[Country] {
       val commonName = extractFromRegex(cleanText, commonNameRegex)
       val yearStart = extractFromRegex(cleanText, yearStartRegex)
       val yearEnd = extractFromRegex(cleanText, yearEndRegex)
-      val capitals = extractListFromRegex(cleanText, "capital")
+      val capitals = extractFromRegex(cleanText, capitalRegex)
       val coordinates = extractFromRegex(cleanText, coordinatesRegex)
+      val government = extractFromRegex(cleanText, governmentRegex)
+      val imageCoat = extractFromRegex(cleanText, imageCoatRegex)
+      val languages = extractFromRegex(cleanText, languagesRegex)
+      val religions = extractFromRegex(cleanText, religionRegex)
 
       val anyCoordinates = coordinates
         .flatMap(Coordinates.fromTemplate)
@@ -62,8 +75,12 @@ object Country extends Infobox[Country] {
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,
-        capitals = capitals,
-        coordinates = anyCoordinates
+        capital = capitals,
+        coordinates = anyCoordinates,
+        governmentType = government,
+        imageCoat = imageCoat,
+        commonLanguages = languages,
+        religion = religions
       )
     }
   }

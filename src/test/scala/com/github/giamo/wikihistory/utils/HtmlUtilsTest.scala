@@ -4,6 +4,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 final class HtmlUtilsTest extends AnyFlatSpec with Matchers {
+
   import HtmlUtils._
 
   "Cleaning an HTML string" should "not change it if nothing is to be replaced" in {
@@ -17,6 +18,13 @@ final class HtmlUtilsTest extends AnyFlatSpec with Matchers {
     cleanHtmlString("1&nbsp;is&nbsp;&lt;&nbsp;2") should ===("1 is < 2")
     cleanHtmlString("(1&lt;2&nbsp;&amp;&amp;&nbsp;x!=&quot;x&quot;)") should ===(
       """(1<2 && x!="x")"""
+    )
+    cleanHtmlString(
+      "[[Ngàn Hống (capital)|Ngàn Hống]] (c. 2879 BC – ?)<br>[[Nghĩa Lĩnh (capital)|Nghĩa Lĩnh]] (29th c. BC)<br>[[Phong Châu]] (until 258&nbsp;BC)"
+    ) should ===(
+       "[[Ngàn Hống (capital)|Ngàn Hống]] (c. 2879 BC - ?) \n" +
+       "[[Nghĩa Lĩnh (capital)|Nghĩa Lĩnh]] (29th c. BC) \n" +
+       "[[Phong Châu]] (until 258 BC)"
     )
   }
 

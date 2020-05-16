@@ -60,7 +60,7 @@ object Date {
     List("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
       .mkString("|")
   private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
-  private val RegexTail = "(?:\\s*(?:\\||\\(.*\\)|<!\\-\\-|<ref|,?\\s*\\[\\[|<br).*)?"
+  private val RegexTail = "(?:\\s*(?:\\||\\(.*\\)|<!\\-\\-|<ref|,?\\s*\\[\\[|<br|\\{\\{).*)?"
 
   private val YearRegex =
     s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)(?:\\s*,)?|(?:$MonthsVariantsStr)(?:\\s+[0-9]+(?:$CardinalVariants)?)?(?:\\s*,)?)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r

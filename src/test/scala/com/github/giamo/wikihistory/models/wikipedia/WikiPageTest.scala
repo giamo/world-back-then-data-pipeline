@@ -18,30 +18,27 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "preserve the original newlines as html <br>'s, if specified" in {
+  it should "preserve the original newlines as html <p>'s" in {
     WikiPage.getCleanHtml(
       rawText = """
         |Mauretania is an ancient region.
         |
         |In 27 BC, the kings of Mauretania became Roman vassals.
-        |""".stripMargin,
-      keepLineBreaks = false
+        |""".stripMargin
     ) should ===(
       "<p>Mauretania is an ancient region.</p><p>In 27 BC, the kings of Mauretania became Roman vassals.</p>"
     )
   }
 
-  it should "not preserve the original newlines, if specified" in {
+  it should "keep all text on one line, if specified" in {
     WikiPage.getCleanHtml(
-      """
-        |'''Mauretania''' is a region in the ancient [[Maghreb]].
+      rawText = """
+        |Mauretania is an ancient region. <br><br/>
         |
         |In 27 BC, the kings of Mauretania became Roman vassals.
-        |""".stripMargin
-    ) should ===(
-      """<p><b>Mauretania</b> is a region in the ancient <a target="_blank" href="https://en.wikipedia.org/wiki/Maghreb" title="Maghreb">Maghreb</a>.""" +
-        "<br/><br/>In 27 BC, the kings of Mauretania became Roman vassals.</p>"
-    )
+        |""".stripMargin,
+      keepAllOneLine = true
+    ) should ===("Mauretania is an ancient region. In 27 BC, the kings of Mauretania became Roman vassals.")
   }
 
   it should "not contain references or text inside double braces" in {
@@ -70,8 +67,8 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
 
     val rawText = readFromFile("test_pages/former_country")
     WikiPage.getHtmlSynopsis(rawText) should ===(
-      """<p>The <b>Empire of Japan</b> was the historical <a target="_blank" href="https://en.wikipedia.org/wiki/nation-state" title="nation-state">nation-state</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/great_power" title="great power">great power</a> that existed from the <a target="_blank" href="https://en.wikipedia.org/wiki/Meiji_Restoration" title="Meiji Restoration">Meiji Restoration</a> in 1868 to the enactment of the <a target="_blank" href="https://en.wikipedia.org/wiki/Constitution_of_Japan" title="Constitution of Japan">1947 constitution</a> of modern <a target="_blank" href="https://en.wikipedia.org/wiki/Japan" title="Japan">Japan</a>.<br/>""" +
-        """Japan's rapid <a target="_blank" href="https://en.wikipedia.org/wiki/industrialization" title="industrialization">industrialization</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a target="_blank" href="https://en.wikipedia.org/wiki/world_power" title="world power">world power</a>.</p>"""
+      """<p>The <b>Empire of Japan</b> was the historical <a target="_blank" href="https://en.wikipedia.org/wiki/nation-state" title="nation-state">nation-state</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/great_power" title="great power">great power</a> that existed from the <a target="_blank" href="https://en.wikipedia.org/wiki/Meiji_Restoration" title="Meiji Restoration">Meiji Restoration</a> in 1868 to the enactment of the <a target="_blank" href="https://en.wikipedia.org/wiki/Constitution_of_Japan" title="Constitution of Japan">1947 constitution</a> of modern <a target="_blank" href="https://en.wikipedia.org/wiki/Japan" title="Japan">Japan</a>.</p>""" +
+        """<p>Japan's rapid <a target="_blank" href="https://en.wikipedia.org/wiki/industrialization" title="industrialization">industrialization</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a target="_blank" href="https://en.wikipedia.org/wiki/world_power" title="world power">world power</a>.</p>"""
     )
   }
 }

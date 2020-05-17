@@ -29,20 +29,15 @@ object WikiPage {
     getCleanHtml(textUntilFirstParagraph)
   }
 
-  def getCleanHtml(rawText: String, keepLineBreaks: Boolean = true): String = {
+  def getCleanHtml(rawText: String, keepAllOneLine: Boolean = false): String = {
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(rawText).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
     val withoutFileLinks = WikiCleanUtils.removeFileLinks(withoutReferences)
     val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutFileLinks)
-    convertToHtml(cleaned, keepLineBreaks)
+    convertToHtml(cleaned, keepAllOneLine)
   }
 
-  private def convertToHtml(rawText: String, keepLineBreaks: Boolean): String = {
-    // newlines are not correctly converted to html
-    val preprocessedText =
-      if (keepLineBreaks) rawText.replaceAll("\n", "<br>")
-      else rawText
-
+  private def convertToHtml(rawText: String, keepAllOneLine: Boolean): String = {
     val stringWriter = new StringWriter()
     val htmlBuilder = new HtmlDocumentBuilder(stringWriter)
     htmlBuilder.setBase(WikiBaseUri)
@@ -50,10 +45,16 @@ object WikiPage {
 
     val markupParser = new MarkupParser(new MediaWikiDialect)
     markupParser.setBuilder(htmlBuilder)
-    markupParser.parse(preprocessedText)
+    markupParser.parse(rawText)
 
     val htmlText = stringWriter.toString
-    htmlText.replaceAll("<a ", """<a target="_blank" """)
+    val withFixedLinks = htmlText.replaceAll("<a ", """<a target="_blank" """)
+
+    if (keepAllOneLine) withFixedLinks
+      .replaceAll("<p>", "")
+      .replaceAll("(<br>|<br\\s*/\\s*>|</p>|\\s)+", " ")
+      .trim
+    else withFixedLinks
   }
 
 }

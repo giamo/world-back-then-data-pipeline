@@ -14,7 +14,7 @@ object SparkUtils {
       .getOrCreate()
 
   val convertToHtmlUdf: UserDefinedFunction = udf { (s: String) =>
-    Option(s).map(WikiPage.convertToHtml)
+    Option(s).map(WikiPage.getCleanHtml)
   }
 
   val parsePageTitleUdf: UserDefinedFunction = udf { (text: String) =>

@@ -37,7 +37,7 @@ object ArchaeologicalCulture extends Infobox[ArchaeologicalCulture] {
         pageId = page.id,
         pageTitle = page.title,
         name = name,
-        synopsis = WikiPage.getHtmlSynopsis(page.text),
+        synopsis = WikiPage.getCleanHtml(page.text),
         region = region,
         dates = dates
       )

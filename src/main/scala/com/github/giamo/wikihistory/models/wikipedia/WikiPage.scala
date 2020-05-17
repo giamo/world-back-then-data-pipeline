@@ -23,6 +23,14 @@ object WikiPage {
       .split("\n")
       .takeWhile(l => !l.trim.startsWith("="))
       .mkString("\n")
+    getCleanHtml(textUntilFirstParagraph)
+  }
+
+  def getCleanHtml(rawText: String): String = {
+    val textUntilFirstParagraph = rawText
+      .split("\n")
+      .takeWhile(l => !l.trim.startsWith("="))
+      .mkString("\n")
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(textUntilFirstParagraph).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
     val withoutFileLinks = WikiCleanUtils.removeFileLinks(withoutReferences)
@@ -30,7 +38,7 @@ object WikiPage {
     convertToHtml(cleaned)
   }
 
-  def convertToHtml(rawText: String): String = {
+  private def convertToHtml(rawText: String): String = {
     // newlines are not correctly converted to html
     val preprocessedText = rawText.replaceAll("\n", "<br>")
 

@@ -20,7 +20,8 @@ final case class Country(
 ) {
   val parsedYearStart: Option[Date] = yearStart.flatMap(Date.fromString(_).toOption)
   val parsedYearEnd: Option[Date] = yearEnd.flatMap(Date.fromString(_).toOption)
-//  val parsedCapitals: List[Capital] = capitals.map(Capital.fromString)
+  val parsedCapitals: List[Capital] = capital
+    .fold(List.empty[Capital])(s => Infobox.extractList(s).map(Capital.fromString))
 
   val toDateRangeString: Option[String] = for {
     s <- yearStart
@@ -70,7 +71,7 @@ object Country extends Infobox[Country] {
         pageId = page.id,
         pageTitle = page.title,
         conventionalName = extractFromFormattedString(conventionalName),
-        synopsis = WikiPage.getHtmlSynopsis(rawText),
+        synopsis = WikiPage.getCleanHtml(rawText),
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,

@@ -9,9 +9,7 @@ trait Infobox[A] {
 
   def fromInfobox(page: WikiPage): Option[A]
 
-  def cleanInfoboxText(text: String): String = text.replace("\n", "$$")
-
-  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*([^$]+)\\$\\$\\s*(?:\\}\\}|\\|)").r
+  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*(.+?)\\s*\n\\s*(?:\\}\\}|\\|)").r
 
   def infoboxListRegex(field: String): Regex =
     (genericInfoboxField(field) + "\\s*=\\s*\\{\\{plainlist\\s*\\|\\s*(.+?)\\}\\}\\s*\\$\\$\\s*(?:\\}\\}$|\\|)").r
@@ -25,7 +23,7 @@ trait Infobox[A] {
       .flatMap {
         _.subgroups match {
           case List(v) => Some(v.trim)
-          case _       => None
+          case _ => None
         }
       }
 
@@ -51,10 +49,11 @@ trait Infobox[A] {
       )
 
   private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
+
   def extractFromFormattedString(text: String): String = text match {
     case formattedStringRegex(value) => value.trim.split("\\|").last.trim
     case _ => text
   }
 
-  private def genericInfoboxField(field: String) = "(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
+  private def genericInfoboxField(field: String) = "(?s)(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
 }

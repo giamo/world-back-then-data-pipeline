@@ -21,12 +21,12 @@ object Philosopher extends Infobox[Philosopher] {
   private val schoolTraditionRegex = infoboxFieldRegex("school_tradition")
 
   override def fromInfobox(page: WikiPage): Option[Philosopher] = {
-    val cleanText = cleanInfoboxText(page.text)
+    val rawText = page.text
 
-    extractFromRegex(cleanText, nameRegex).map { name =>
-      val birthDate = extractFromRegex(cleanText, birthDateRegex)
-      val birthPlace = extractFromRegex(cleanText, birthPlaceRegex)
-      val schoolTraditions = extractFromRegex(cleanText, schoolTraditionRegex)
+    extractFromRegex(rawText, nameRegex).map { name =>
+      val birthDate = extractFromRegex(rawText, birthDateRegex)
+      val birthPlace = extractFromRegex(rawText, birthPlaceRegex)
+      val schoolTraditions = extractFromRegex(rawText, schoolTraditionRegex)
 
       Philosopher(
         pageId = page.id,

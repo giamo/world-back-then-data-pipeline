@@ -27,11 +27,11 @@ object ArchaeologicalCulture extends Infobox[ArchaeologicalCulture] {
   private val datesRegex = infoboxFieldRegex("dates")
 
   override def fromInfobox(page: WikiPage): Option[ArchaeologicalCulture] = {
-    val cleanText = cleanInfoboxText(page.text)
+    val rawText = page.text
 
-    extractFromRegex(cleanText, nameRegex).map { name =>
-      val region = extractFromRegex(cleanText, regionRegex)
-      val dates = extractFromRegex(cleanText, datesRegex)
+    extractFromRegex(rawText, nameRegex).map { name =>
+      val region = extractFromRegex(rawText, regionRegex)
+      val dates = extractFromRegex(rawText, datesRegex)
 
       ArchaeologicalCulture(
         pageId = page.id,

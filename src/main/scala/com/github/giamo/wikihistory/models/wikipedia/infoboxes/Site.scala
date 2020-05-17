@@ -18,14 +18,13 @@ object Site extends Infobox[Site] {
   private val coordinatesRegex = infoboxFieldRegex("coordinates")
 
   override def fromInfobox(page: WikiPage): Option[Site] = {
-    val text = page.text
-    val cleanText = cleanInfoboxText(text)
+    val rawText = page.text
 
-    extractFromRegex(cleanText, nameRegex).map { name =>
-      val coordinates = extractFromRegex(cleanText, coordinatesRegex)
+    extractFromRegex(rawText, nameRegex).map { name =>
+      val coordinates = extractFromRegex(rawText, coordinatesRegex)
       val anyCoordinates = coordinates
         .flatMap(Coordinates.fromTemplate)
-        .fold(Coordinates.fromTemplate(text))(Some(_))
+        .fold(Coordinates.fromTemplate(rawText))(Some(_))
 
       Site(
         pageId = page.id,

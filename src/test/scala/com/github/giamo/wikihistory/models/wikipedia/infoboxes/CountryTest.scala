@@ -130,4 +130,25 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     Country.fromInfobox(testPage3) should ===(Country(pageId = 3, pageTitle = "Bactria", conventionalName = "Bactria").some)
   }
 
+  it should "parse all the relevant text in a field, regardless of newlines" in {
+    val text =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Rome
+        ||capital                = {{plainlist|
+        |* [[Seleucia]]{{small|&lt;br/&gt;(305–240 BC)}}
+        |* [[Antioch]]{{small|&lt;br/&gt;(240–63 BC)}}}}
+        ||other = value
+        |}}
+        |""".stripMargin
+    val testPage = sampleWikiPage(1, "Rome", text)
+    Country.fromInfobox(testPage) should ===(
+      Country(
+        pageId = 1,
+        pageTitle = "Rome",
+        conventionalName = "Rome",
+        capital = "{{plainlist|\n* [[Seleucia]]{{small|&lt;br/&gt;(305–240 BC)}}\n* [[Antioch]]{{small|&lt;br/&gt;(240–63 BC)}}}}".some
+      ).some)
+  }
+
 }

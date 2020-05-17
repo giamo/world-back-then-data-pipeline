@@ -50,18 +50,17 @@ object Country extends Infobox[Country] {
 
   override def fromInfobox(page: WikiPage): Option[Country] = {
     val rawText = page.text
-    val cleanText = cleanInfoboxText(rawText)
 
-    extractFromRegex(cleanText, nameRegex).map { conventionalName =>
-      val commonName = extractFromRegex(cleanText, commonNameRegex)
-      val yearStart = extractFromRegex(cleanText, yearStartRegex)
-      val yearEnd = extractFromRegex(cleanText, yearEndRegex)
-      val capitals = extractFromRegex(cleanText, capitalRegex)
-      val coordinates = extractFromRegex(cleanText, coordinatesRegex)
-      val government = extractFromRegex(cleanText, governmentRegex)
-      val imageCoat = extractFromRegex(cleanText, imageCoatRegex)
-      val languages = extractFromRegex(cleanText, languagesRegex)
-      val religions = extractFromRegex(cleanText, religionRegex)
+    extractFromRegex(rawText, nameRegex).map { conventionalName =>
+      val commonName = extractFromRegex(rawText, commonNameRegex)
+      val yearStart = extractFromRegex(rawText, yearStartRegex)
+      val yearEnd = extractFromRegex(rawText, yearEndRegex)
+      val capitals = extractFromRegex(rawText, capitalRegex)
+      val coordinates = extractFromRegex(rawText, coordinatesRegex)
+      val government = extractFromRegex(rawText, governmentRegex)
+      val imageCoat = extractFromRegex(rawText, imageCoatRegex)
+      val languages = extractFromRegex(rawText, languagesRegex)
+      val religions = extractFromRegex(rawText, religionRegex)
 
       val anyCoordinates = coordinates
         .flatMap(Coordinates.fromTemplate)

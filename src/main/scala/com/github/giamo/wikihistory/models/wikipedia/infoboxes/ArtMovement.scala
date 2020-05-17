@@ -18,10 +18,10 @@ object ArtMovement extends Infobox[ArtMovement] {
   private val yearsRegex = infoboxFieldRegex("yearsactive")
 
   override def fromInfobox(page: WikiPage): Option[ArtMovement] = {
-    val cleanText = cleanInfoboxText(page.text)
+    val rawText = page.text
 
-    extractFromRegex(cleanText, nameRegex).map { name =>
-      val yearsActive = extractFromRegex(cleanText, yearsRegex)
+    extractFromRegex(rawText, nameRegex).map { name =>
+      val yearsActive = extractFromRegex(rawText, yearsRegex)
       ArtMovement(
         pageId = page.id,
         pageTitle = page.title,

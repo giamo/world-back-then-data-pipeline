@@ -11,9 +11,6 @@ trait Infobox[A] {
 
   def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*(.+?)\\s*\n\\s*(?:\\}\\}|\\|)").r
 
-  def infoboxListRegex(field: String): Regex =
-    (genericInfoboxField(field) + "\\s*=\\s*\\{\\{plainlist\\s*\\|\\s*(.+?)\\}\\}\\s*\\$\\$\\s*(?:\\}\\}$|\\|)").r
-
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex
       .findAllIn(text)
@@ -27,27 +24,6 @@ trait Infobox[A] {
         }
       }
 
-  def extractListFromRegex(text: String, field: String): List[String] =
-    infoboxListRegex(field)
-      .findAllIn(text)
-      .matchData.toList
-      .headOption
-      .map { r =>
-        r.group(1)
-          .split("\\|?\\s*\\*")
-          .map(_.replaceAll("\\$\\$", "").trim)
-          .toList
-          .filter(_.nonEmpty)
-      }
-      .getOrElse(
-        extractFromRegex(text, infoboxFieldRegex(field))
-          .map {
-            case s if s == null || s.trim.isEmpty => List.empty
-            case s => List(s.trim)
-          }
-          .getOrElse(List.empty[String])
-      )
-
   private val formattedStringRegex = "\\{\\{([^\\}]+)[\\}]+".r
 
   def extractFromFormattedString(text: String): String = text match {
@@ -56,4 +32,17 @@ trait Infobox[A] {
   }
 
   private def genericInfoboxField(field: String) = "(?s)(?i)\\{\\{Infobox " + infoboxName + ".*?" + field
+}
+
+object Infobox {
+  private val listRegex: Regex = "(?s)(?i)\\s*\\{\\{\\s*plainlist\\s*\\|\\s*(.+)\\}\\}\\s*".r
+
+  def extractList(text: String): List[String] = text match {
+    case listRegex(elements) => elements
+      .split("\n?\\s*\\*\\s*")
+      .toList
+      .map(_.trim)
+      .filter(_.nonEmpty)
+    case _ => List(text)
+  }
 }

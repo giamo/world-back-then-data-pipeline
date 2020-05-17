@@ -1,6 +1,7 @@
 package com.github.giamo.wikihistory.models.wikipedia
 
 import java.io.StringWriter
+import java.net.URI
 
 import com.github.giamo.wikihistory.utils.{HtmlUtils, WikiCleanUtils}
 import net.java.textilej.parser.MarkupParser
@@ -17,6 +18,8 @@ case class WikiPage(
 )
 
 object WikiPage {
+
+  final val WikiBaseUri: URI = new URI("https://en.wikipedia.org")
 
   def getHtmlSynopsis(rawText: String): String = {
     val textUntilFirstParagraph = rawText
@@ -42,6 +45,7 @@ object WikiPage {
 
     val stringWriter = new StringWriter()
     val htmlBuilder = new HtmlDocumentBuilder(stringWriter)
+    htmlBuilder.setBase(WikiBaseUri)
     htmlBuilder.setEmitAsDocument(false)
 
     val markupParser = new MarkupParser(new MediaWikiDialect)
@@ -49,7 +53,7 @@ object WikiPage {
     markupParser.parse(preprocessedText)
 
     val htmlText = stringWriter.toString
-    htmlText.replaceAll("""href="/wiki/""", """target="_blank" href="https://en.wikipedia.org/wiki/""")
+    htmlText.replaceAll("<a ", """<a target="_blank" """)
   }
 
 }

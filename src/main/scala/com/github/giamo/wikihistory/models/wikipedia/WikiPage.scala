@@ -7,6 +7,7 @@ import com.github.giamo.wikihistory.utils.{HtmlUtils, WikiCleanUtils}
 import net.java.textilej.parser.MarkupParser
 import net.java.textilej.parser.builder.HtmlDocumentBuilder
 import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
+import org.jsoup.parser.Parser
 
 case class WikiPage(
   id: Long,
@@ -49,12 +50,13 @@ object WikiPage {
 
     val htmlText = stringWriter.toString
     val withFixedLinks = htmlText.replaceAll("<a ", """<a target="_blank" """)
+    val withEscapedEntities = Parser.unescapeEntities(withFixedLinks, true)
 
-    if (keepAllOneLine) withFixedLinks
+    if (keepAllOneLine) withEscapedEntities
       .replaceAll("<p>", "")
       .replaceAll("(<br>|<br\\s*/\\s*>|</p>|\\s)+", " ")
       .trim
-    else withFixedLinks
+    else withEscapedEntities
   }
 
 }

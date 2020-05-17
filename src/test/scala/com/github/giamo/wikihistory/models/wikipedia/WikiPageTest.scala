@@ -33,7 +33,7 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
   it should "keep all text on one line, if specified" in {
     WikiPage.getCleanHtml(
       rawText = """
-        |Mauretania is an ancient region. <br><br/>
+        |Mauretania is an ancient region. <br><br/><br />
         |
         |In 27 BC, the kings of Mauretania became Roman vassals.
         |""".stripMargin,

@@ -18,7 +18,20 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "preserve the original newlines as html <br>'s" in {
+  it should "preserve the original newlines as html <br>'s, if specified" in {
+    WikiPage.getCleanHtml(
+      rawText = """
+        |Mauretania is an ancient region.
+        |
+        |In 27 BC, the kings of Mauretania became Roman vassals.
+        |""".stripMargin,
+      keepLineBreaks = false
+    ) should ===(
+      "<p>Mauretania is an ancient region.</p><p>In 27 BC, the kings of Mauretania became Roman vassals.</p>"
+    )
+  }
+
+  it should "not preserve the original newlines, if specified" in {
     WikiPage.getCleanHtml(
       """
         |'''Mauretania''' is a region in the ancient [[Maghreb]].

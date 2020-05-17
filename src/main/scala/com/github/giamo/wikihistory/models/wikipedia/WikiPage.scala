@@ -26,21 +26,19 @@ object WikiPage {
     getCleanHtml(textUntilFirstParagraph)
   }
 
-  def getCleanHtml(rawText: String): String = {
-    val textUntilFirstParagraph = rawText
-      .split("\n")
-      .takeWhile(l => !l.trim.startsWith("="))
-      .mkString("\n")
-    val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(textUntilFirstParagraph).trim
+  def getCleanHtml(rawText: String, keepLineBreaks: Boolean = true): String = {
+    val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(rawText).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
     val withoutFileLinks = WikiCleanUtils.removeFileLinks(withoutReferences)
     val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutFileLinks)
-    convertToHtml(cleaned)
+    convertToHtml(cleaned, keepLineBreaks)
   }
 
-  private def convertToHtml(rawText: String): String = {
+  private def convertToHtml(rawText: String, keepLineBreaks: Boolean): String = {
     // newlines are not correctly converted to html
-    val preprocessedText = rawText.replaceAll("\n", "<br>")
+    val preprocessedText =
+      if (keepLineBreaks) rawText.replaceAll("\n", "<br>")
+      else rawText
 
     val stringWriter = new StringWriter()
     val htmlBuilder = new HtmlDocumentBuilder(stringWriter)

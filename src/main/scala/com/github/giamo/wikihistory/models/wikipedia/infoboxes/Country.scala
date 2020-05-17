@@ -71,7 +71,7 @@ object Country extends Infobox[Country] {
         pageId = page.id,
         pageTitle = page.title,
         conventionalName = extractFromFormattedString(conventionalName),
-        synopsis = WikiPage.getCleanHtml(rawText),
+        synopsis = WikiPage.getHtmlSynopsis(rawText),
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,

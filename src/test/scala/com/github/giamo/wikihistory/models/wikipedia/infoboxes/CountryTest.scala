@@ -152,4 +152,26 @@ final class CountryTest extends AnyFlatSpec with Matchers {
       ).some)
   }
 
+  it should "correctly leave fields empty when there is no content" in {
+    val text1 =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Rome
+        ||capital                =
+        ||other                  = value
+        |}}
+        |""".stripMargin
+    val text2 =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Rome
+        ||capital                =
+        |}}
+        |""".stripMargin
+    val testPage1 = sampleWikiPage(1, "Rome", text1)
+    val testPage2 = sampleWikiPage(2, "Rome", text2)
+    Country.fromInfobox(testPage1) should ===(Country(pageId = 1, pageTitle = "Rome", conventionalName = "Rome").some)
+    Country.fromInfobox(testPage2) should ===(Country(pageId = 2, pageTitle = "Rome", conventionalName = "Rome").some)
+  }
+
 }

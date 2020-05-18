@@ -19,7 +19,7 @@ trait Infobox[A] {
       .headOption
       .flatMap {
         _.subgroups match {
-          case List(v) => Some(v.trim)
+          case List(v) if !v.startsWith("|") => Some(v.trim)
           case _ => None
         }
       }

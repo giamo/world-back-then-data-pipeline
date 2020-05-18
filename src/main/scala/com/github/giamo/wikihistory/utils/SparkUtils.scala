@@ -28,6 +28,7 @@ object SparkUtils {
       .map(Infobox.extractList(_).map { c =>
         PageTitle.fromLink(Capital.fromString(c).name)
           .map(_.value)
+          .map(c => c.replaceFirst("\\s*\\(ancient city\\)", ""))
           .getOrElse(c)
       })
       .getOrElse(List.empty[String])

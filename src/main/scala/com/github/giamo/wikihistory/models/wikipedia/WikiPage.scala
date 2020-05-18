@@ -30,6 +30,8 @@ object WikiPage {
     getCleanHtml(textUntilFirstParagraph)
   }
 
+  // TODO: file links are not removed correctly when they contain other links
+  // TODO: also remove text before infoboxes and file links
   def getCleanHtml(rawText: String, keepAllOneLine: Boolean = false): String = {
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(rawText).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)

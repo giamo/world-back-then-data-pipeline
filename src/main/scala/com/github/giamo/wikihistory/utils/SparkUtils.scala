@@ -22,6 +22,7 @@ object SparkUtils {
     PageTitle.fromLink(text).map(_.value).getOrElse(text)
   }
 
+  // TODO: support multiple capitals in the form of "region: city"
   val parseCapitalsUdf: UserDefinedFunction = udf { (capitalString: String) =>
     Option(capitalString)
       .map(Infobox.extractList(_).map { c =>

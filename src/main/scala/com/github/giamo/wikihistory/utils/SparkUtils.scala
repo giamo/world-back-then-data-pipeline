@@ -1,5 +1,6 @@
 package com.github.giamo.wikihistory.utils
 
+import com.github.giamo.wikihistory.models.wikipedia.infoboxes.Infobox
 import com.github.giamo.wikihistory.models.wikipedia.{Capital, PageTitle, WikiPage}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.expressions.UserDefinedFunction
@@ -21,8 +22,14 @@ object SparkUtils {
     PageTitle.fromLink(text).map(_.value).getOrElse(text)
   }
 
-  val parseCapitalsUdf: UserDefinedFunction = udf { (capitals: Seq[String]) =>
-    capitals.map(Capital.fromString).map(c => (c.name, c.dates.map(_.toYear)))
+  val parseCapitalsUdf: UserDefinedFunction = udf { (capitalString: String) =>
+    Option(capitalString)
+      .map(Infobox.extractList(_).map { c =>
+        PageTitle.fromLink(Capital.fromString(c).name)
+          .map(_.value)
+          .getOrElse(c)
+      })
+      .getOrElse(List.empty[String])
   }
 
 }

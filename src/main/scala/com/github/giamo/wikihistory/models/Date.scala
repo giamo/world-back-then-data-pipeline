@@ -9,9 +9,11 @@ import com.github.giamo.wikihistory.utils.HtmlUtils
 import scala.util.{Success, Try}
 
 sealed trait Date {
+  def fromYear: Int
   def toYear: Int
 
-  def isBefore(other: Date): Boolean = this.toYear < other.toYear
+  def isBefore(other: Date): Boolean = this.toYear < other.fromYear
+  def isAfter(other: Date): Boolean = this.fromYear > other.toYear
 }
 
 sealed trait SpecificDate extends Date {
@@ -26,11 +28,13 @@ final case class Year(
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
 ) extends SpecificDate {
-  override def toYear: Int = if (label == AD) yearNumber else -1 * yearNumber
+  override def fromYear: Int = if (label == AD) yearNumber else -1 * yearNumber
+  override def toYear: Int = fromYear
 }
 
 final case class UncertainYear(variants: List[Date]) extends UncertainDate {
-  override def toYear: Int = variants.map(_.toYear).min
+  override def fromYear: Int = variants.map(_.fromYear).min
+  override def toYear: Int = variants.map(_.toYear).max
 }
 
 final case class Decade(
@@ -38,8 +42,8 @@ final case class Decade(
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
 ) extends SpecificDate {
-  override def toYear: Int =
-    if (label == AD) decadeNumber else -1 * decadeNumber
+  override def fromYear: Int = if (label == AD) decadeNumber else -1 * (decadeNumber + 9)
+  override def toYear: Int = if (label == AD) decadeNumber + 9 else -1 * decadeNumber
 }
 
 final case class Century(
@@ -47,12 +51,13 @@ final case class Century(
   label: DatingLabel = AD,
   approximation: DateApproximation = NONE
 ) extends SpecificDate {
-  override def toYear: Int =
-    100 * (if (label == AD) centuryNumber else -1 * centuryNumber)
+  override def fromYear: Int = if (label == AD) 100 * (centuryNumber - 1) else -100 * (centuryNumber - 1) - 99
+  override def toYear: Int = if (label == AD) 100 * (centuryNumber - 1) + 99 else -100 * (centuryNumber - 1)
 }
 
 final case class DateRange(from: Date, to: Date) extends Date {
-  override def toYear: Int = from.toYear
+  override def fromYear: Int = from.fromYear
+  override def toYear: Int = to.toYear
 }
 
 object Date {

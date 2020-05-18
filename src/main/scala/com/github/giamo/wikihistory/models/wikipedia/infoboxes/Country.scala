@@ -32,7 +32,7 @@ final case class Country(
     for {
       s <- parsedYearStart
       e <- parsedYearEnd
-    } yield s.toYear <= from && e.toYear >= to
+    } yield s.fromYear <= from && e.toYear >= to
     ).getOrElse(false)
 }
 

@@ -277,4 +277,48 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("(100BC&nbsp;-&nbsp;50BC)") should ===(DateRange(from = Year(100, BC), to = Year(50, BC)).asRight)
     Date.fromString("(2500~2000 BC)") should ===(DateRange(from = Year(2500, BC), to = Year(2000, BC)).asRight)
   }
+
+  "The parsed from/to years" should "both be the year itself for year dates" in {
+    val year1 = Year(1990, AD)
+    year1.fromYear should ===(1990)
+    year1.toYear should ===(1990)
+
+    val year2 = Year(27, BC)
+    year2.fromYear should ===(-27)
+    year2.toYear should ===(-27)
+
+    val year3 = UncertainYear(List(Year(1900), Year(1950), Year(20, BC)))
+    year3.fromYear should ===(-20)
+    year3.toYear should ===(1950)
+  }
+
+  it should "be the decade's ends for decade dates" in {
+    val decade1 = Decade(1990, AD)
+    decade1.fromYear should ===(1990)
+    decade1.toYear should ===(1999)
+
+    val decade2 = Decade(150, BC)
+    decade2.fromYear should ===(-159)
+    decade2.toYear should ===(-150)
+  }
+
+  it should "be the century's ends for century dates" in {
+    val century1 = Century(2, AD)
+    century1.fromYear should ===(100)
+    century1.toYear should ===(199)
+
+    val century2 = Century(3, BC)
+    century2.fromYear should ===(-299)
+    century2.toYear should ===(-200)
+  }
+
+  it should "be the ranges's ends for range dates" in {
+    val range1 = DateRange(Year(1915), Year(1918))
+    range1.fromYear should ===(1915)
+    range1.toYear should ===(1918)
+
+    val range2 = DateRange(Year(250, BC), Year(200, BC))
+    range2.fromYear should ===(-250)
+    range2.toYear should ===(-200)
+  }
 }

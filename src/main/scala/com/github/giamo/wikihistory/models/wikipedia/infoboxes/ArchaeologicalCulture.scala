@@ -13,8 +13,8 @@ final case class ArchaeologicalCulture(
 ) {
   def isIncludedinRange(from: Int, to: Int): Boolean = {
     dates.flatMap(d => Date.fromString(d).toOption) match {
-      case Some(DateRange(f, t)) => f.toYear <= from && t.toYear >= to
-      case Some(d: SpecificDate) => d.toYear <= from && d.toYear >= to
+      case Some(DateRange(f, t)) => f.fromYear <= from && t.fromYear >= to
+      case Some(d: SpecificDate) => d.fromYear <= from && d.fromYear >= to
       case _ => false
     }
   }

@@ -1,5 +1,6 @@
 package com.github.giamo.wikihistory.utils
 
+import com.github.giamo.wikihistory.models.Date
 import com.github.giamo.wikihistory.models.wikipedia.infoboxes.Infobox
 import com.github.giamo.wikihistory.models.wikipedia.{Capital, PageTitle, WikiPage}
 import org.apache.spark.sql.SparkSession
@@ -32,6 +33,10 @@ object SparkUtils {
           .getOrElse(c)
       })
       .getOrElse(List.empty[String])
+  }
+
+  val parseDateUdf: UserDefinedFunction = udf { (s: String) =>
+    Option(s).flatMap(Date.fromString(_).toOption).map(_.toString)
   }
 
 }

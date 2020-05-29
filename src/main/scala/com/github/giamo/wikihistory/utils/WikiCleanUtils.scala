@@ -1,5 +1,7 @@
 package com.github.giamo.wikihistory.utils
 
+import org.apache.commons.lang3.StringUtils
+
 import scala.annotation.tailrec
 
 object WikiCleanUtils {
@@ -8,23 +10,28 @@ object WikiCleanUtils {
   private final val CloseBrace = 2
 
   // remove all all double braces and their content (single or arbitrarily nested)
-  def removeDoubleBraces(text: String): String = {
+  def removeDoubleBraces(
+    text: String,
+    braceSymbolOpen: Char = '{',
+    braceSymbolClose: Char = '}',
+    bracesPrefix: String = ""
+  ): String = {
     @tailrec
     def removeFirstDoubleBracesRec(s: String, i: Int, cur: Int, state: Int, level: Int): String = {
       if (cur == s.length) s.substring(0, i)
       else {
         val currentChar = s.charAt(cur)
         val newLevel = (state, currentChar) match {
-          case (OpenBrace, '{') => level + 1
-          case (CloseBrace, '}') => level - 1
+          case (OpenBrace, `braceSymbolOpen`) => level + 1
+          case (CloseBrace, `braceSymbolClose`) => level - 1
           case _ => level
         }
 
         val newState = (state, currentChar) match {
-          case (_, '{') => OpenBrace
+          case (_, `braceSymbolOpen`) => OpenBrace
           case (OpenBrace, _) => NoBraces
-          case (CloseBrace, '}') => NoBraces
-          case (_, '}') => CloseBrace
+          case (CloseBrace, `braceSymbolClose`) => NoBraces
+          case (_, `braceSymbolClose`) => CloseBrace
           case _ => state
         }
 
@@ -35,9 +42,9 @@ object WikiCleanUtils {
     }
 
     @tailrec
-    def removeAllDoubleBracesRec(remainingText: String): String = {
-      val i1 = remainingText.indexOf("{{")
-      val i2 = remainingText.indexOf("}}")
+   def removeAllDoubleBracesRec(remainingText: String): String = {
+      val i1 = StringUtils.indexOfIgnoreCase(remainingText, s"${braceSymbolOpen}${braceSymbolOpen}$bracesPrefix")
+      val i2 = StringUtils.indexOfIgnoreCase(remainingText, s"${braceSymbolClose}${braceSymbolClose}")
 
       if (i1 == -1 || i2 == -1) remainingText
       else {
@@ -57,7 +64,7 @@ object WikiCleanUtils {
     s.replaceAll("(?s)(?:<ref|&lt;ref).*?(?:/ref>|/>|/ref&gt;|/&gt;)", "")
 
   def removeFileLinks(s: String): String =
-    s.replaceAll("(?i)\\s*\\[\\[file:.*?\\]\\]\\s*", "")
+      removeDoubleBraces(s, braceSymbolOpen = '[', braceSymbolClose = ']', bracesPrefix = "file:")
 
   // empty or dirty parenthesis can be left over after removing references
   def cleanupLeftoverParenthesis(s: String): String = s

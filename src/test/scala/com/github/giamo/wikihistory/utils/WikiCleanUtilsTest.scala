@@ -56,12 +56,21 @@ final class WikiCleanUtilsTest extends AnyFlatSpec with Matchers {
     cleanupLeftoverParenthesis("Corinth or Korinthos ( or )") should ===("Corinth or Korinthos")
   }
 
-  "Removing file links" should "replace double square braces starting with 'file':" in {
+  "Removing file links" should "replace double square braces starting with 'file:'" in {
     removeFileLinks("[[File:Edom.PNG|right|thumb|upright|Map]] text without link") should ===(
       "text without link"
     )
     removeFileLinks("[[file:Rome.gif|caption]] text without link") should ===(
       "text without link"
+    )
+  }
+
+  it should "also work correctly when there are nested links inside file links" in {
+    removeFileLinks("[[File:Edom.PNG|right|thumb|[[link text|link url]]|Map]] text without link") should ===(
+      "text without link"
+    )
+    removeFileLinks("[[file:Rome.gif|caption]] text without file link but with [[normal link]]") should ===(
+      "text without file link but with [[normal link]]"
     )
   }
 

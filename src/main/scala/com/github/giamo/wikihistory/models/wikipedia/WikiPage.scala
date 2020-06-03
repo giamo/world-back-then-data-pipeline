@@ -7,6 +7,7 @@ import com.github.giamo.wikihistory.utils.{HtmlUtils, WikiCleanUtils}
 import net.java.textilej.parser.MarkupParser
 import net.java.textilej.parser.builder.HtmlDocumentBuilder
 import net.java.textilej.parser.markup.mediawiki.MediaWikiDialect
+import org.apache.commons.lang3.StringUtils
 import org.jsoup.parser.Parser
 
 case class WikiPage(
@@ -23,7 +24,10 @@ object WikiPage {
   final val WikiBaseUri: URI = new URI("https://en.wikipedia.org")
 
   def getHtmlSynopsis(rawText: String): String = {
-    val textUntilFirstParagraph = rawText
+    val infoboxIndex = StringUtils.indexOfIgnoreCase(rawText, "{{infobox")
+    val textWithoutHeading = if (infoboxIndex >=0) rawText.substring(infoboxIndex) else rawText
+
+    val textUntilFirstParagraph = textWithoutHeading
       .split("\n")
       .takeWhile(l => !l.trim.startsWith("="))
       .mkString("\n")

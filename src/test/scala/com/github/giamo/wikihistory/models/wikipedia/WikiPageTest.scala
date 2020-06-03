@@ -71,4 +71,17 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
         """<p>Japan's rapid <a target="_blank" href="https://en.wikipedia.org/wiki/industrialization" title="industrialization">industrialization</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a target="_blank" href="https://en.wikipedia.org/wiki/world_power" title="world power">world power</a>.</p>"""
     )
   }
+
+  it should "not include any text appearing before infoboxes" in {
+    val rawText =
+      """
+        |:''For the English football league, see [[Aetolian League (football)]].''
+        |
+        |{{Infobox country
+        ||native_name =''Koinon tōn Aitōlōn''
+        |}}
+        |The Aetolian League was a confederation of tribal communities and cities""".stripMargin
+
+    WikiPage.getHtmlSynopsis(rawText) should ===("<p>The Aetolian League was a confederation of tribal communities and cities</p>")
+  }
 }

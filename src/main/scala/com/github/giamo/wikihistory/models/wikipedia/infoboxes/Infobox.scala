@@ -35,14 +35,22 @@ trait Infobox[A] {
 }
 
 object Infobox {
-  private val listRegex: Regex = "(?s)(?i)\\s*\\{\\{\\s*plainlist\\s*\\|\\s*(.+)\\}\\}\\s*".r
+  private val listRegex1: Regex = "(?s)(?i)\\s*\\{\\{\\s*(?:plainlist|flatlist|hlist)\\s*\\|\\s*(.+)\\}\\}\\s*".r
+  private val listRegex2: Regex = "(?s)(?i)\\s*\\{\\{\\s*(?:plainlist|flatlist|hlist)\\s*\\}\\}(.+)\\{\\{\\s*(?:endplainlist|endflatlist|endhlist)\\s*\\}\\}\\s*".r
+  private val listRegex3: Regex = "(?s)\\s*(.*\\*.*)\\s*".r
 
-  def extractList(text: String): List[String] = text match {
-    case listRegex(elements) => elements
+  def extractList(text: String): List[String] = {
+    def extractListElems(elements: String) = elements
       .split("\n?\\s*\\*\\s*")
       .toList
       .map(_.trim)
       .filter(_.nonEmpty)
-    case _ => List(text)
+
+    text match {
+      case listRegex1(elements) => extractListElems(elements)
+      case listRegex2(elements) => extractListElems(elements)
+      case listRegex3(elements) => extractListElems(elements)
+      case _ => List(text)
+    }
   }
 }

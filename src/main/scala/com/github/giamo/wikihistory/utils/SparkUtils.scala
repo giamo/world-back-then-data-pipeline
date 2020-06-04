@@ -20,9 +20,13 @@ object SparkUtils {
   }
 
   val prettyDatesUdf: UserDefinedFunction = udf { (yearStart: String, yearEnd: String) =>
-    def prettyPrintDate(s: String) =
-      Option(s).flatMap(Date.fromString(_).toOption).fold("?")(_.toPrettyString())
-    s"${prettyPrintDate(yearStart)} - ${prettyPrintDate(yearEnd)}"
+    def prettyPrintDate(s: Option[Date]) = s.fold("?")(_.toPrettyString())
+
+    val s = Option(yearStart).flatMap(Date.fromString(_).toOption)
+    val e = Option(yearEnd).flatMap(Date.fromString(_).toOption)
+
+    if (s.isEmpty && e.isEmpty) null
+    else s"${prettyPrintDate(s)} - ${prettyPrintDate(e)}"
   }
 
 

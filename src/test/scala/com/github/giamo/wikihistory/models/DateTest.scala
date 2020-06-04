@@ -212,6 +212,12 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("{{circa|785 BC}}{{cite book |editor1-last=Fisher | editor1-first=Marjorie M. }} ") should ===(Year(785, BC, GENERIC).asRight)
   }
 
+  it should "work in the presence of references" in {
+    Date.fromString(
+      "674<ref name=\\\"ixt\\\">[http://cdigital.dgb.uanl.mx/la/1080012502_C/1080012503_T2/1080012503_MA.PDF Chavero, A. (Ed.) (1892) ''Obras Históricas'']</ref>"
+    ) should ===(Year(674).asRight)
+  }
+
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {
     Date.fromString("1980-1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
     Date.fromString("1980~1990") should ===(DateRange(from = Year(1980), to = Year(1990)).asRight)
@@ -337,9 +343,11 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Decade(1200, BC, BEFORE).toPrettyString() should === ("before 1200s BCE")
 
     Century(20, AD).toPrettyString() should ===("20th century")
-    Century(3, BC, AFTER).toPrettyString() should ===("after 3rd century BCE")
+    Century(13, BC, AFTER).toPrettyString() should ===("after 13th century BCE")
     Century(1, AD, LATE).toPrettyString() should ===("late 1st century")
     Century(2, BC, GENERIC).toPrettyString() should ===("circa 2nd century BCE")
+    Century(11, AD).toPrettyString() should ===("11th century")
+    Century(12, BC).toPrettyString() should ===("12th century BCE")
 
     DateRange(Year(1900, AD, GENERIC), Year(1910, AD, GENERIC)).toPrettyString() should ===("circa 1900 - circa 1910")
     DateRange(Year(10, BC), Year(50, AD)).toPrettyString() should ===("10 BCE - 50")

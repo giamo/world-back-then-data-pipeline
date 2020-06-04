@@ -4,7 +4,7 @@ import cats.implicits._
 import com.github.giamo.wikihistory.models.DateApproximation.{DateApproximation, NONE}
 import com.github.giamo.wikihistory.models.DatingLabel._
 import com.github.giamo.wikihistory.models.DateApproximation._
-import com.github.giamo.wikihistory.utils.HtmlUtils
+import com.github.giamo.wikihistory.utils.{HtmlUtils, WikiCleanUtils}
 
 import scala.util.{Success, Try}
 
@@ -69,9 +69,9 @@ final case class Century(
     s"${approximation.toPrettyString()} ${ordinalCentury()} century ${if (label == BC) label.toPrettyString() else ""}".trim
 
   def ordinalCentury(): String = centuryNumber % 10 match {
-    case 1 => s"${centuryNumber}st"
-    case 2 => s"${centuryNumber}nd"
-    case 3 => s"${centuryNumber}rd"
+    case 1 if centuryNumber != 11 => s"${centuryNumber}st"
+    case 2 if centuryNumber != 12 => s"${centuryNumber}nd"
+    case 3 if centuryNumber != 13 => s"${centuryNumber}rd"
     case _ => s"${centuryNumber}th"
   }
 }
@@ -114,8 +114,10 @@ object Date {
   // ex: 3649 KE 779 AH or 1377 CE
   // ex: Unknown (/Uncertain), 6th Century – 4th century BC
   // ex: [[1937]]
-  def fromString(dateStr: String): Either[ParseError, Date] =
-    HtmlUtils.cleanHtmlString(dateStr).toLowerCase match {
+  def fromString(dateStr: String): Either[ParseError, Date] = {
+    val withoutReferences = WikiCleanUtils.removeReferences(dateStr)
+    val cleanHtml = HtmlUtils.cleanHtmlString(withoutReferences).toLowerCase
+    cleanHtml match {
       case YearRegex(approximatePrefix, year, decadeSuffix, label) =>
         for {
           datingLabel <- DatingLabel.fromString(label)
@@ -160,6 +162,7 @@ object Date {
         }
       case _ => DateParseError(s"invalid date string: '$dateStr'").asLeft
     }
+  }
 
   private def parseSimpleYear(yearStr: String): Either[DateParseError, Int] =
     Try(cleanNumber(yearStr).toInt) match {

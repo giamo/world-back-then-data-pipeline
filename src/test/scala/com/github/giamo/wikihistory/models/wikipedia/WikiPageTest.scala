@@ -55,6 +55,11 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
     ) should ===("""<p>The region of Mauretania (Maghreb).</p>""")
   }
 
+  it should "not contain html comments" in {
+    WikiPage.getCleanHtml("<!-- General information -->") shouldBe empty
+    WikiPage.getCleanHtml("some text!<!-- General information -->") should ===("<p>some text!</p>")
+  }
+
   "A clean synopsis" should "contain only the first paragraph of text from a raw page" in {
     WikiPage.getHtmlSynopsis(
       """Lorem ipsum

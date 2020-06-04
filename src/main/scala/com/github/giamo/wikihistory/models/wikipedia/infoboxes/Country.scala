@@ -2,6 +2,7 @@ package com.github.giamo.wikihistory.models.wikipedia.infoboxes
 
 import com.github.giamo.wikihistory.models.Date
 import com.github.giamo.wikihistory.models.wikipedia.{Capital, Coordinates, WikiPage}
+import com.github.giamo.wikihistory.utils.WikiCleanUtils
 
 final case class Country(
   pageId: Long,
@@ -75,12 +76,12 @@ object Country extends Infobox[Country] {
         name = commonName.map(extractFromFormattedString),
         yearStart = yearStart,
         yearEnd = yearEnd,
-        capital = capitals,
+        capital = capitals.map(WikiCleanUtils.removeHtmlComments).filter(_.nonEmpty),
         coordinates = anyCoordinates,
-        governmentType = government,
-        imageCoat = imageCoat,
-        commonLanguages = languages,
-        religion = religions
+        governmentType = government.map(WikiCleanUtils.removeHtmlComments).filter(_.nonEmpty),
+        imageCoat = imageCoat.map(WikiCleanUtils.removeHtmlComments).filter(_.nonEmpty),
+        commonLanguages = languages.map(WikiCleanUtils.removeHtmlComments).filter(_.nonEmpty),
+        religion = religions.map(WikiCleanUtils.removeHtmlComments).filter(_.nonEmpty)
       )
     }
   }

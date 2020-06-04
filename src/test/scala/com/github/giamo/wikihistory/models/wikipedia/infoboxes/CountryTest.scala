@@ -174,4 +174,18 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     Country.fromInfobox(testPage2) should ===(Country(pageId = 2, pageTitle = "Rome", conventionalName = "Rome").some)
   }
 
+  it should "not extract fields without real content" in {
+    val text =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Rome
+        ||government_type        = <!--General information-->
+        ||capital                = <!--not present-->
+        ||religion               = <!--no data-->
+        ||other                  = value
+        |}}
+        |""".stripMargin
+    val testPage = sampleWikiPage(1, "Rome", text)
+    Country.fromInfobox(testPage) should ===(Country(pageId = 1, pageTitle = "Rome", conventionalName = "Rome").some)
+  }
 }

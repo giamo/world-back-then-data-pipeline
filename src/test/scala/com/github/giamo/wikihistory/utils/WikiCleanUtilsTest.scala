@@ -74,4 +74,13 @@ final class WikiCleanUtilsTest extends AnyFlatSpec with Matchers {
     )
   }
 
+  "Removing html comments" should "remove all texts inside comment braces" in {
+    removeHtmlComments("this is a string<!--comment--> without comments") should ===(
+      "this is a string without comments"
+    )
+    removeHtmlComments("this is a string<!--comment--> without <!--other comment-->comments") should ===(
+      "this is a string without comments"
+    )
+  }
+
 }

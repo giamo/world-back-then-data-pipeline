@@ -38,7 +38,8 @@ object WikiPage {
     val withoutDoubleBraces = WikiCleanUtils.removeDoubleBraces(rawText).trim
     val withoutReferences = WikiCleanUtils.removeReferences(withoutDoubleBraces)
     val withoutFileLinks = WikiCleanUtils.removeFileLinks(withoutReferences)
-    val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutFileLinks)
+    val withoutComments = WikiCleanUtils.removeHtmlComments(withoutFileLinks)
+    val cleaned = WikiCleanUtils.cleanupLeftoverParenthesis(withoutComments)
     convertToHtml(cleaned, keepAllOneLine)
   }
 

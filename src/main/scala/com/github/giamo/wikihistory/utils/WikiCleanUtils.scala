@@ -66,6 +66,8 @@ object WikiCleanUtils {
   def removeFileLinks(s: String): String =
       removeDoubleBraces(s, braceSymbolOpen = '[', braceSymbolClose = ']', bracesPrefix = "file:")
 
+  def removeHtmlComments(s: String): String = s.replaceAll("<!--.*?-->", "");
+
   // empty or dirty parenthesis can be left over after removing references
   def cleanupLeftoverParenthesis(s: String): String = s
     // remove empty parenthesis

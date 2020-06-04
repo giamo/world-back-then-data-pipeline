@@ -19,6 +19,13 @@ object SparkUtils {
     Option(s).map(WikiPage.getCleanHtml(_, keepAllOneLine = true))
   }
 
+  val prettyDatesUdf: UserDefinedFunction = udf { (yearStart: String, yearEnd: String) =>
+    def prettyPrintDate(s: String) =
+      Option(s).flatMap(Date.fromString(_).toOption).fold("?")(_.toPrettyString())
+    s"${prettyPrintDate(yearStart)} - ${prettyPrintDate(yearEnd)}"
+  }
+
+
   val parsePageTitleUdf: UserDefinedFunction = udf { (text: String) =>
     PageTitle.fromLink(text).map(_.value).getOrElse(text)
   }

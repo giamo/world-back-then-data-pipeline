@@ -6,7 +6,7 @@ import com.github.giamo.wikihistory.UnitTestUtils.readFromFile
 
 final class WikiPageTest extends AnyFlatSpec with Matchers {
 
-  "A clean html converted from markup" should "have correct style and links" in {
+  "A clean html converted from markup" should "have correct styles" in {
     WikiPage.getCleanHtml("This ''is'' a '''synopsis'''") should ===(
       "<p>This <i>is</i> a <b>synopsis</b></p>"
     )
@@ -17,6 +17,12 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
       "<p>Text with a <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/link\" title=\"link\">link text</a></p>"
     )
   }
+
+//  it should "convert links even when containing styling" in {
+//    WikiPage.getCleanHtml("The County of Álava was one of the [[Basque señoríos|Basque ''señoríos'']], a feudal territory.") should ===(
+//      "<p>The County of Álava was one of the <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Basque_señoríos\" title=\"Basque señoríos\">Basque señoríos</a>, a feudal territory.</p>"
+//    )
+//  }
 
   it should "preserve the original newlines as html <p>'s" in {
     WikiPage.getCleanHtml(

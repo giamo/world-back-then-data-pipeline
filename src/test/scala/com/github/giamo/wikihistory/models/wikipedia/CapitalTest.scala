@@ -34,5 +34,30 @@ final class CapitalTest extends AnyFlatSpec with Matchers {
       Capital(name = "[[Ngàn Hống (capital)|Ngàn Hống]]", dates = Year(2879, BC, GENERIC).some))
     fromString("Paris (1200-1210)") should ===(
       Capital(name = "Paris", dates = DateRange(Year(1200), Year(1210)).some))
+    fromString("[[Paris]]  (987–1682)") should ===(
+      Capital(name = "[[Paris]]", dates = DateRange(Year(987), Year(1682)).some))
+    fromString("[[Versailles (city)|Versailles]]  (1682–1789)") should ===(
+      Capital(name = "[[Versailles (city)|Versailles]]", dates = DateRange(Year(1682), Year(1789)).some))
+
+    // TODO: cover remaining corner cases
+//    fromString("[[Paris]]  (987–1682;1789–1792; 1814–1848)") should ===()
+//    fromString(
+//      "{{ubl|[[Shechem]] <small>(930 BCE)</small>|[[Penuel]] <small>(930–909)</small>|[[Tirzah (ancient city)|Tirzah]] <small>(909–880)</small>}}"
+//    ) should ===(Capital(name = ""))
+//    fromString(
+//      "[[Chang'an]]<small><br />(206 BC–9 AD, 190–195 AD)</small><br />[[Luoyang]]<small><br />(23–190 AD, 196 AD)</small><br />"
+//    ) should ===(Capital(name = ""))
+//    fromString(
+//      "* [[Thebes, Egypt|Thebes]]<br>(1550 – c. 1352 BC, 17th dynasty and 18th dynasty before [[Akhenaten]])"
+//    ) should ===(Capital(name = ""))
+//    fromString(
+//      "[[Ngàn Hống (capital)|Ngàn Hống]] (c. 2879 BC – ?)<br>[[Nghĩa Lĩnh (capital)|Nghĩa Lĩnh]] (29th c. BC)<br>[[Phong Châu]] (until 258&nbsp;BC)"
+//    ) should ===(Capital(name = ""))
+  }
+
+  it should "remove references from the city's name" in {
+    fromString(
+      "[[Sriwijaya Kingdom Archaeological Park|Palembang]]&lt;ref name=&quot;Britannica-Srivijaya-Palembang&quot;&gt;{{Cite web|url=https://www.britannica.com}}&lt;/ref&gt;&lt;ref&gt;{{Cite news|url=https}}&lt;/ref&gt;"
+    ) should ===(Capital("[[Sriwijaya Kingdom Archaeological Park|Palembang]]"))
   }
 }

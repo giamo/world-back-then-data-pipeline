@@ -209,6 +209,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("October 24, 1906<ref name=Oxford/>") should ===(Year(1906).asRight)
     Date.fromString("1875<br") should ===(Year(1875).asRight)
     Date.fromString("{{Birth-year|1775}} ({{nobold|}})") should ===(Year(1775).asRight)
+    Date.fromString("{{circa|785 BC}}{{cite book |editor1-last=Fisher | editor1-first=Marjorie M. }} ") should ===(Year(785, BC, GENERIC).asRight)
   }
 
   "Parsing a date range" should "recognize a range of two hyphen- or tilde-separated dates" in {
@@ -342,6 +343,5 @@ final class DateTest extends AnyFlatSpec with Matchers {
 
     DateRange(Year(1900, AD, GENERIC), Year(1910, AD, GENERIC)).toPrettyString() should ===("circa 1900 - circa 1910")
     DateRange(Year(10, BC), Year(50, AD)).toPrettyString() should ===("10 BCE - 50")
-
   }
 }

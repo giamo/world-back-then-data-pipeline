@@ -82,6 +82,7 @@ final class WikiPageTest extends AnyFlatSpec with Matchers {
         |}}
         |The Aetolian League was a confederation of tribal communities and cities""".stripMargin
 
-    WikiPage.getHtmlSynopsis(rawText) should ===("<p>The Aetolian League was a confederation of tribal communities and cities</p>")
+    WikiPage.getHtmlSynopsis(rawText) should ===(
+      "<p>The Aetolian League was a confederation of tribal communities and cities</p>")
   }
 }

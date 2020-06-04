@@ -14,6 +14,8 @@ sealed trait Date {
 
   def isBefore(other: Date): Boolean = this.toYear < other.fromYear
   def isAfter(other: Date): Boolean = this.fromYear > other.toYear
+
+  def toPrettyString(): String
 }
 
 sealed trait SpecificDate extends Date {
@@ -30,11 +32,17 @@ final case class Year(
 ) extends SpecificDate {
   override def fromYear: Int = if (label == AD) yearNumber else -1 * yearNumber
   override def toYear: Int = fromYear
+
+  override def toPrettyString(): String =
+    s"${approximation.toPrettyString()} $yearNumber ${if (label == BC) label.toPrettyString() else ""}".trim
 }
 
 final case class UncertainYear(variants: List[Date]) extends UncertainDate {
   override def fromYear: Int = variants.map(_.fromYear).min
   override def toYear: Int = variants.map(_.toYear).max
+
+  override def toPrettyString(): String =
+    variants.map(_.toPrettyString()).mkString(" or ")
 }
 
 final case class Decade(
@@ -44,6 +52,9 @@ final case class Decade(
 ) extends SpecificDate {
   override def fromYear: Int = if (label == AD) decadeNumber else -1 * (decadeNumber + 9)
   override def toYear: Int = if (label == AD) decadeNumber + 9 else -1 * decadeNumber
+
+  override def toPrettyString(): String =
+    s"${approximation.toPrettyString()} ${decadeNumber}s ${if (label == BC) label.toPrettyString() else ""}".trim
 }
 
 final case class Century(
@@ -53,11 +64,22 @@ final case class Century(
 ) extends SpecificDate {
   override def fromYear: Int = if (label == AD) 100 * (centuryNumber - 1) else -100 * (centuryNumber - 1) - 99
   override def toYear: Int = if (label == AD) 100 * (centuryNumber - 1) + 99 else -100 * (centuryNumber - 1)
+
+  override def toPrettyString(): String =
+    s"${approximation.toPrettyString()} ${ordinalCentury()} century ${if (label == BC) label.toPrettyString() else ""}".trim
+
+  def ordinalCentury(): String = centuryNumber % 10 match {
+    case 1 => s"${centuryNumber}st"
+    case 2 => s"${centuryNumber}nd"
+    case 3 => s"${centuryNumber}rd"
+    case _ => s"${centuryNumber}th"
+  }
 }
 
 final case class DateRange(from: Date, to: Date) extends Date {
   override def fromYear: Int = from.fromYear
   override def toYear: Int = to.toYear
+  override def toPrettyString(): String = s"${from.toPrettyString()} - ${to.toPrettyString()}"
 }
 
 object Date {

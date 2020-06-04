@@ -321,4 +321,27 @@ final class DateTest extends AnyFlatSpec with Matchers {
     range2.fromYear should ===(-250)
     range2.toYear should ===(-200)
   }
+
+  "A date" should "have a pretty print representation" in {
+    Year(1234, AD).toPrettyString() should ===("1234")
+    Year(800, BC, EARLY).toPrettyString() should ===("early 800 BCE")
+    Year(2020, AD, MIDDLE).toPrettyString() should ===("middle 2020")
+    Year(1900, AD, GENERIC).toPrettyString() should ===("circa 1900")
+
+    UncertainYear(List(Year(1950), Year(1951))).toPrettyString() should ===("1950 or 1951")
+    UncertainYear(List(Year(1500, BC), Year(1550, BC))).toPrettyString() should ===("1500 BCE or 1550 BCE")
+
+    Decade(1920, AD).toPrettyString() should === ("1920s")
+    Decade(800, BC, GENERIC).toPrettyString() should === ("circa 800s BCE")
+    Decade(1200, BC, BEFORE).toPrettyString() should === ("before 1200s BCE")
+
+    Century(20, AD).toPrettyString() should ===("20th century")
+    Century(3, BC, AFTER).toPrettyString() should ===("after 3rd century BCE")
+    Century(1, AD, LATE).toPrettyString() should ===("late 1st century")
+    Century(2, BC, GENERIC).toPrettyString() should ===("circa 2nd century BCE")
+
+    DateRange(Year(1900, AD, GENERIC), Year(1910, AD, GENERIC)).toPrettyString() should ===("circa 1900 - circa 1910")
+    DateRange(Year(10, BC), Year(50, AD)).toPrettyString() should ===("10 BCE - 50")
+
+  }
 }

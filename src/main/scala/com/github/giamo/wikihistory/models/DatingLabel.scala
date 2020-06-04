@@ -11,15 +11,15 @@ object DatingLabel {
     (DatingLabel.BCVariants ++ DatingLabel.ADVariants).map(Pattern.quote).mkString("|")
 
   sealed trait DatingLabel {
-    val label: String
+    def toPrettyString(): String
   }
 
   case object BC extends DatingLabel {
-    override val label = "BC"
+    override def toPrettyString(): String = "BCE"
   }
 
   case object AD extends DatingLabel {
-    override val label = "BC"
+    override def toPrettyString(): String = "CE"
   }
 
   def fromString(labelStr: String): Either[DateParseError, DatingLabel] =

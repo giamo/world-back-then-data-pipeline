@@ -16,21 +16,21 @@ object DateApproximation {
       .map(Pattern.quote)
       .mkString("|")
 
-  sealed trait DateApproximation
+  sealed trait DateApproximation { def toPrettyString(): String }
 
-  case object NONE extends DateApproximation
+  case object NONE extends DateApproximation { override def toPrettyString() = "" }
 
-  case object GENERIC extends DateApproximation
+  case object GENERIC extends DateApproximation { override def toPrettyString() = "circa" }
 
-  case object EARLY extends DateApproximation
+  case object EARLY extends DateApproximation { override def toPrettyString() = "early" }
 
-  case object MIDDLE extends DateApproximation
+  case object MIDDLE extends DateApproximation { override def toPrettyString() = "middle" }
 
-  case object LATE extends DateApproximation
+  case object LATE extends DateApproximation { override def toPrettyString() = "late" }
 
-  case object BEFORE extends DateApproximation
+  case object BEFORE extends DateApproximation { override def toPrettyString() = "before" }
 
-  case object AFTER extends DateApproximation
+  case object AFTER extends DateApproximation { override def toPrettyString() = "after" }
 
   def fromString(
     approximationStr: String

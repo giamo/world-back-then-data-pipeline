@@ -41,6 +41,7 @@ final class SiteTest extends AnyFlatSpec with Matchers {
     val text =
       """{{Infobox ancient site
         || name = {{lower|0.1em|{{nobold|{{lang|gr| Athens }}}}}}
+        || other = some
         |}}
         |""".stripMargin
     val testPage = sampleWikiPage(3000, "Athens", text)
@@ -70,9 +71,9 @@ final class SiteTest extends AnyFlatSpec with Matchers {
   }
 
   it should "be parsed from the right infoboxes regardless of case-sensitivity)" in {
-    val text1 = "{{Infobox Settlement\n| name = Rome\n|}}"
-    val text2 = "{{Infobox Ancient Site\n| Name = Stonehenge\n|}}"
-    val text3 = "{{Infobox Greek Dimos\n| name = Athens\n|}}"
+    val text1 = "{{Infobox Settlement\n| name = Rome\n |other = some}}"
+    val text2 = "{{Infobox Ancient Site\n| Name = Stonehenge\n |other = some}}"
+    val text3 = "{{Infobox Greek Dimos\n| name = Athens\n |other = some}}"
     val testPage1 = sampleWikiPage(1, "Rome", text1)
     val testPage2 = sampleWikiPage(2, "Stonehenge", text2)
     val testPage3 = sampleWikiPage(3, "Athens", text3)

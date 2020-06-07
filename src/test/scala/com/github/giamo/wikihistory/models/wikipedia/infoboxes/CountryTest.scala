@@ -70,6 +70,7 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     val text =
       """{{Infobox former country
         || conventional_long_name = {{raise|0.2em|Xianyang}}
+        || other = some
         |}}
         |""".stripMargin
     val testPage = sampleWikiPage(4000, "Xianyang (city)", text)
@@ -124,9 +125,9 @@ final class CountryTest extends AnyFlatSpec with Matchers {
   }
 
   it should "be parsed from the right infoboxes regardless of case-sensitivity)" in {
-    val text1 = "{{Infobox Country\n| CONVENTIONAL_LONG_NAME = Italy\n|}}"
-    val text2 = "{{Infobox Former Country\n| conventional_long_name = Sparta\n|}}"
-    val text3 = "{{Infobox Former Subdivision\n| Conventional_long_name = Bactria\n|}}"
+    val text1 = "{{Infobox Country\n| CONVENTIONAL_LONG_NAME = Italy\n|other = some}}"
+    val text2 = "{{Infobox Former Country\n| conventional_long_name = Sparta\n|other = some}}"
+    val text3 = "{{Infobox Former Subdivision\n| Conventional_long_name = Bactria\n|other = some}}"
     val testPage1 = sampleWikiPage(1, "Italy", text1)
     val testPage2 = sampleWikiPage(2, "Sparta", text2)
     val testPage3 = sampleWikiPage(3, "Bactria", text3)
@@ -195,17 +196,17 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     Country.fromInfobox(testPage) should ===(Country(pageId = 1, pageTitle = "Rome", infoboxType = "country", conventionalName = "Rome").some)
   }
 
-  // TODO: cover this case
-//  it should "be parsed from a one-line infobox string" in {
-//    val text = "{{Infobox country|native_name={{native name|ang|Miercna rīce}}&lt;br/&gt;{{native name|la|Merciorum regnum}}|conventional_long_name=Kingdom of Mercia|common_name=Mercia|capital=Mercia|logo=Mercia.png}}"
-//    val testPage = sampleWikiPage(1, "Mercia", text)
-//    Country.fromInfobox(testPage) should ===(
-//      Country(
-//        pageId = 1,
-//        pageTitle = "Mercia",
-//        infoboxType = "country",
-//        conventionalName = "Kingdom of Mercia",
-//        capital = "Mercia".some
-//      ).some)
-//  }
+  it should "be parsed from a one-line infobox string" in {
+    val text = "{{Infobox country|native_name={{native name|ang|Miercna rīce}}&lt;br/&gt;{{native name|la|Merciorum regnum}}|conventional_long_name=Kingdom of Mercia|common_name=Mercia|capital=Mercia|logo=Mercia.png}}"
+    val testPage = sampleWikiPage(1, "Mercia", text)
+    Country.fromInfobox(testPage) should ===(
+      Country(
+        pageId = 1,
+        pageTitle = "Mercia",
+        infoboxType = "country",
+        conventionalName = "Kingdom of Mercia",
+        name = "Mercia".some,
+        capital = "Mercia".some
+      ).some)
+  }
 }

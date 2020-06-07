@@ -194,4 +194,18 @@ final class CountryTest extends AnyFlatSpec with Matchers {
     val testPage = sampleWikiPage(1, "Rome", text)
     Country.fromInfobox(testPage) should ===(Country(pageId = 1, pageTitle = "Rome", infoboxType = "country", conventionalName = "Rome").some)
   }
+
+  // TODO: cover this case
+//  it should "be parsed from a one-line infobox string" in {
+//    val text = "{{Infobox country|native_name={{native name|ang|Miercna rīce}}&lt;br/&gt;{{native name|la|Merciorum regnum}}|conventional_long_name=Kingdom of Mercia|common_name=Mercia|capital=Mercia|logo=Mercia.png}}"
+//    val testPage = sampleWikiPage(1, "Mercia", text)
+//    Country.fromInfobox(testPage) should ===(
+//      Country(
+//        pageId = 1,
+//        pageTitle = "Mercia",
+//        infoboxType = "country",
+//        conventionalName = "Kingdom of Mercia",
+//        capital = "Mercia".some
+//      ).some)
+//  }
 }

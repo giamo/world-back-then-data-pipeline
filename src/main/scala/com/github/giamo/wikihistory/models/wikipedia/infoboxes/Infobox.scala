@@ -9,6 +9,8 @@ trait Infobox[A] {
 
   def fromInfobox(page: WikiPage): Option[A]
 
+  val infoboxTypeRegex: Regex = "(?s)(?i)\\{\\{Infobox\\s*([\\p{IsAlphabetic}\\s]+)\\s*.*".r
+
   def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*(.+?)\\s*\n\\s*(?:\\}\\}|\\|)").r
 
   def extractFromRegex(text: String, regex: Regex): Option[String] =

@@ -6,6 +6,7 @@ import com.github.giamo.wikihistory.models.wikipedia.WikiPage
 final case class ArchaeologicalCulture(
   pageId: Long,
   pageTitle: String,
+  infoboxType: String,
   name: String,
   synopsis: String = "",
   region: Option[String],
@@ -29,13 +30,17 @@ object ArchaeologicalCulture extends Infobox[ArchaeologicalCulture] {
   override def fromInfobox(page: WikiPage): Option[ArchaeologicalCulture] = {
     val rawText = page.text
 
-    extractFromRegex(rawText, nameRegex).map { name =>
+    for {
+      infoboxType <- extractFromRegex(rawText, infoboxTypeRegex)
+      name <- extractFromRegex(rawText, nameRegex)
+    } yield {
       val region = extractFromRegex(rawText, regionRegex)
       val dates = extractFromRegex(rawText, datesRegex)
 
       ArchaeologicalCulture(
         pageId = page.id,
         pageTitle = page.title,
+        infoboxType = infoboxType.toLowerCase.trim,
         name = name,
         synopsis = WikiPage.getCleanHtml(page.text),
         region = region,

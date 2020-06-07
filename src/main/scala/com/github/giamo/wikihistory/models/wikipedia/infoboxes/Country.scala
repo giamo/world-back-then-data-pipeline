@@ -7,6 +7,7 @@ import com.github.giamo.wikihistory.utils.WikiCleanUtils
 final case class Country(
   pageId: Long,
   pageTitle: String,
+  infoboxType: String,
   conventionalName: String,
   synopsis: String = "",
   name: Option[String] = None,
@@ -53,7 +54,10 @@ object Country extends Infobox[Country] {
   override def fromInfobox(page: WikiPage): Option[Country] = {
     val rawText = page.text
 
-    extractFromRegex(rawText, nameRegex).map { conventionalName =>
+    for {
+      infoboxType <- extractFromRegex(rawText, infoboxTypeRegex)
+      conventionalName <- extractFromRegex(rawText, nameRegex)
+    } yield {
       val commonName = extractFromRegex(rawText, commonNameRegex)
       val yearStart = extractFromRegex(rawText, yearStartRegex)
       val yearEnd = extractFromRegex(rawText, yearEndRegex)
@@ -71,6 +75,7 @@ object Country extends Infobox[Country] {
       Country(
         pageId = page.id,
         pageTitle = page.title,
+        infoboxType = infoboxType.toLowerCase.trim,
         conventionalName = extractFromFormattedString(conventionalName),
         synopsis = WikiPage.getHtmlSynopsis(rawText),
         name = commonName.map(extractFromFormattedString),

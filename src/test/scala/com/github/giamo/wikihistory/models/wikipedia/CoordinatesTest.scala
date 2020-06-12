@@ -31,6 +31,12 @@ final class CoordinatesTest extends AnyFlatSpec with Matchers {
     fromTemplate("{{coord|36|12|19.8|N|36|10|18.5|E|display=inline,title}}") should ===(
       Coordinates(36.206, 36.172).some
     )
+    fromTemplate("{{Coord|11|09||N|122|29||W|display=title}}") should ===(
+      Coordinates(11.150, -122.483).some
+    )
+    fromTemplate("{{coord|6|55||N|79|55||E|display=inline}}") should ===(
+      Coordinates(6.917, 79.917).some
+    )
   }
 
   it should "extract decimal lat and long when explicit" in {

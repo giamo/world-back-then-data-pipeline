@@ -9,6 +9,7 @@ import net.iryndin.jdbf.reader.DbfReader
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.util.Try
 import scala.util.control.NonFatal
 
 final class DbfParser(zipFilePath: String) {
@@ -27,6 +28,7 @@ final class DbfParser(zipFilePath: String) {
           else {
             record.setStringCharset(Utf8Charset)
             val dbRecord = DbfRecord(
+              year = fileYear().getOrElse(throw new Exception("error")),
               name = record.getString("NAME"),
               wikiPage = record.getString("WIKI_PAGE"),
               shortName = Option(record.getString("ABBREVNAME")),
@@ -51,5 +53,11 @@ final class DbfParser(zipFilePath: String) {
     zipEntries.find(_.getName.endsWith(".dbf")).map { dbfEntry =>
       rootZip.getInputStream(dbfEntry)
     }
+  }
+
+  private val fileNameRegex = ".*/([\\-0-9]+)\\.zip".r
+  def fileYear(): Option[Int] = zipFilePath match {
+    case fileNameRegex(name) => Try(name.toInt).toOption
+    case _ => None
   }
 }

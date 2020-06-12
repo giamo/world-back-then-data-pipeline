@@ -19,6 +19,14 @@ object SparkUtils {
     Option(s).map(WikiPage.getCleanHtml(_, keepAllOneLine = true))
   }
 
+  val fromYearUdf: UserDefinedFunction = udf { (s: String) =>
+    Option(s).flatMap(Date.fromString(_).toOption).map(_.fromYear)
+  }
+
+  val toYearUdf: UserDefinedFunction = udf { (s: String) =>
+    Option(s).flatMap(Date.fromString(_).toOption).map(_.toYear)
+  }
+
   val prettyDatesUdf: UserDefinedFunction = udf { (yearStart: String, yearEnd: String) =>
     def prettyPrintDate(s: Option[Date]) = s.fold("?")(_.toPrettyString())
 

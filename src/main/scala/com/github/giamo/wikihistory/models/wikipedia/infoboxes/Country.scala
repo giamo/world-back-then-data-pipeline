@@ -52,7 +52,7 @@ object Country extends Infobox[Country] {
   private val religionRegex = infoboxFieldRegex("religion")
 
   override def fromInfobox(page: WikiPage): Option[Country] = {
-    val rawText = page.text
+    val rawText = WikiCleanUtils.removeReferences(page.text)
 
     for {
       infoboxType <- extractFromRegex(rawText, infoboxTypeRegex)

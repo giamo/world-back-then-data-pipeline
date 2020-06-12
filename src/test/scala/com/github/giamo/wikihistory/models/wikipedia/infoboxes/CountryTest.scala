@@ -40,7 +40,7 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         conventionalName = "Empire of Great Japan",
         synopsis =
           """<p>The <b>Empire of Japan</b> was the historical <a target="_blank" href="https://en.wikipedia.org/wiki/nation-state" title="nation-state">nation-state</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/great_power" title="great power">great power</a> that existed from the <a target="_blank" href="https://en.wikipedia.org/wiki/Meiji_Restoration" title="Meiji Restoration">Meiji Restoration</a> in 1868 to the enactment of the <a target="_blank" href="https://en.wikipedia.org/wiki/Constitution_of_Japan" title="Constitution of Japan">1947 constitution</a> of modern <a target="_blank" href="https://en.wikipedia.org/wiki/Japan" title="Japan">Japan</a>.</p>""" +
-            """<p>Japan's rapid <a target="_blank" href="https://en.wikipedia.org/wiki/industrialization" title="industrialization">industrialization</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a target="_blank" href="https://en.wikipedia.org/wiki/world_power" title="world power">world power</a>.</p>""", name = "Empire of Japan".some, yearStart = "1868&lt;ref&gt;''One can date the &quot;restoration&quot; of imperial rule from the edict of January 3, 1868.'' Jansen, p.334.&lt;/ref&gt;".some, yearEnd = "1947&lt;ref name=ndlconstitution/&gt;".some,
+            """<p>Japan's rapid <a target="_blank" href="https://en.wikipedia.org/wiki/industrialization" title="industrialization">industrialization</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/militarization" title="militarization">militarization</a> led to its emergence as a <a target="_blank" href="https://en.wikipedia.org/wiki/world_power" title="world power">world power</a>.</p>""", name = "Empire of Japan".some, yearStart = "1868".some, yearEnd = "1947".some,
         coordinates = Coordinates(-55.667, 22.333).some,
         imageCoat = "Imperial Seal of Japan.svg".some,
         religion = "Buddhism".some
@@ -207,6 +207,28 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         conventionalName = "Kingdom of Mercia",
         name = "Mercia".some,
         capital = "Mercia".some
+      ).some)
+  }
+
+  it should "correctly remove references from infobox fields" in {
+    val text =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Rome
+        ||government_type        = Republic<ref>{{cite web|url=http://salimbasarda.net/istoria/sitalianu-in-sardigna-impostu-a-obligu-de-lege-cun-boginu/|title=Limba Sarda 2.0S'italianu in Sardigna? Impostu a òbligu de lege cun Boginu – Limba Sarda 2.0|work=Limba Sarda 2.0|accessdate=28 November 2015}}</ref>, then Empire
+        ||religion               = Christianity&lt;ref&gt;blabla&lt;/ref&gt;
+        ||other                  = value
+        |}}
+        |""".stripMargin
+    val testPage = sampleWikiPage(1, "Rome", text)
+    Country.fromInfobox(testPage) should ===(
+      Country(
+        pageId = 1,
+        pageTitle = "Rome",
+        infoboxType = "country",
+        conventionalName = "Rome",
+        governmentType = "Republic, then Empire".some,
+        religion = "Christianity".some
       ).some)
   }
 }

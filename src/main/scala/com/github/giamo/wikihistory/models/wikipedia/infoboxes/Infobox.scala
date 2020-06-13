@@ -11,7 +11,7 @@ trait Infobox[A] {
 
   val infoboxTypeRegex: Regex = "(?s)(?i)\\{\\{Infobox\\s*([\\p{IsAlphabetic}\\s]+)\\s*.*".r
 
-  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*(.+?)\\s*(?:\\|[a-z0-9_\\s]+=.*)").r
+  def infoboxFieldRegex(field: String): Regex = (genericInfoboxField(field) + "\\s*=\\s*(.+?)\\s*(?:\\|[a-z0-9_\\s]+=.*|\n\\s*\\|\\s*\n|\\|\\||\\}\\}\\s*\n\\s*[^\\|*])").r
 
   def extractFromRegex(text: String, regex: Regex): Option[String] =
     regex
@@ -39,19 +39,21 @@ trait Infobox[A] {
 object Infobox {
   private val listRegex1: Regex = "(?s)(?i)\\s*\\{\\{\\s*(?:plainlist|flatlist|hlist)\\s*\\|\\s*(.+)\\}\\}\\s*".r
   private val listRegex2: Regex = "(?s)(?i)\\s*\\{\\{\\s*(?:plainlist|flatlist|hlist)\\s*\\}\\}(.+)\\{\\{\\s*(?:endplainlist|endflatlist|endhlist)\\s*\\}\\}\\s*".r
-  private val listRegex3: Regex = "(?s)\\s*(.*\\*.*)\\s*".r
+  private val listRegex3: Regex = "(?s)(?i)\\s*\\{\\{\\s*(?:unbulleted list\\s*\\|)(.+)\\}\\}\\s*".r
+  private val listRegex4: Regex = "(?s)\\s*(.*\\*.*)\\s*".r
 
   def extractList(text: String): List[String] = {
-    def extractListElems(elements: String) = elements
-      .split("\n?\\s*\\*\\s*")
+    def extractListElems(elements: String, separator: String) = elements
+      .split(s"\n?\\s*$separator\\s*")
       .toList
       .map(_.trim)
       .filter(_.nonEmpty)
 
     text match {
-      case listRegex1(elements) => extractListElems(elements)
-      case listRegex2(elements) => extractListElems(elements)
-      case listRegex3(elements) => extractListElems(elements)
+      case listRegex1(elements) => extractListElems(elements, separator = "\\*")
+      case listRegex2(elements) => extractListElems(elements, separator = "\\*")
+      case listRegex3(elements) => extractListElems(elements, separator = "\\s+\\|")
+      case listRegex4(elements) => extractListElems(elements, separator = "\\*")
       case _ => List(text)
     }
   }

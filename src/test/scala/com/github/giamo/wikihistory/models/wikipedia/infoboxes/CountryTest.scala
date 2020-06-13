@@ -231,4 +231,52 @@ final class CountryTest extends AnyFlatSpec with Matchers {
         religion = "Christianity".some
       ).some)
   }
+
+  it should "correctly parse infobox fields in the last position or followed by an empty line" in {
+    val text =
+      """
+        |{{Infobox country
+        ||native_name            = Babylonia
+        ||conventional_long_name = Babylonia}}
+        |Babylonia ({{IPAc-en|ˌ|b|æ|b|ɪ|ˈ|l|oʊ|n|i|ə|lang=babylonian}}) was an ancient city...
+        |""".stripMargin
+    val text2 =
+      "{{Infobox country|native_name= Babylonia|conventional_long_name = Babylonia}}\n{{Ancient city}}"
+    val text3 =
+      """
+        |{{Infobox country
+        ||conventional_long_name = Babylonia
+        ||government_type        = Monarchy
+        ||
+        ||native_name            = Babylonia
+        |}}
+        |""".stripMargin
+    val testPage = sampleWikiPage(1, "Babylonia", text)
+    val testPage2 = sampleWikiPage(2, "Babylonia", text2)
+    val testPage3 = sampleWikiPage(3, "Babylonia", text3)
+
+    Country.fromInfobox(testPage) should ===(
+      Country(
+        pageId = 1,
+        pageTitle = "Babylonia",
+        infoboxType = "country",
+        conventionalName = "Babylonia",
+        synopsis = "<p>Babylonia was an ancient city...</p>"
+      ).some)
+    Country.fromInfobox(testPage2) should ===(
+      Country(
+        pageId = 2,
+        pageTitle = "Babylonia",
+        infoboxType = "country",
+        conventionalName = "Babylonia"
+      ).some)
+    Country.fromInfobox(testPage3) should ===(
+      Country(
+        pageId = 3,
+        pageTitle = "Babylonia",
+        infoboxType = "country",
+        conventionalName = "Babylonia",
+        governmentType = "Monarchy".some
+      ).some)
+  }
 }

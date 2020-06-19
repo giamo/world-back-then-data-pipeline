@@ -135,7 +135,7 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("mid-20th century CE") should ===(Century(20, AD, approximation = MIDDLE).asRight)
   }
 
-  it should "detect a year also when month and/or day are present (in different formats)" in {
+  it should "detect a year also when month and/or day and/or day-range are present (in different formats)" in {
     Date.fromString("8 February 266") should ===(Year(266, AD).asRight)
     Date.fromString("10 July 420 BC") should ===(Year(420, BC).asRight)
     Date.fromString("december 2000") should ===(Year(2000, AD).asRight)
@@ -145,6 +145,21 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("December 2019") should ===(Year(2019, AD).asRight)
     Date.fromString("January, 1945") should ===(Year(1945, AD).asRight)
     Date.fromString("November , 1273") should ===(Year(1273, AD).asRight)
+    Date.fromString("20 December 1852") should ===(Year(1852, AD).asRight)
+    Date.fromString("c. 20th January 1852") should ===(Year(1852, AD, GENERIC).asRight)
+    Date.fromString("20-21 December 1852") should ===(Year(1852, AD).asRight)
+    Date.fromString("December 20th - 21st 100 BC") should ===(Year(100, BC).asRight)
+    Date.fromString("September 20 1674") should ===(Year(1674, AD).asRight)
+    Date.fromString("October 11 1675") should ===(Year(1675, AD).asRight)
+    Date.fromString("September 20 - October 11 1676") should ===(Year(1676, AD).asRight)
+    Date.fromString("30th July - August 1st 1500") should ===(Year(1500, AD).asRight)
+    Date.fromString("July-August 500 BCE") should ===(Year(500, BC).asRight)
+    Date.fromString("17 to 19 April 1794") should ===(Year(1794, AD).asRight)
+    Date.fromString("27—28 February until 5 March 1800") should ===(Year(1800, AD).asRight)
+    Date.fromString("September, 14 - October 4, 1943") should ===(Year(1943, AD).asRight)
+    Date.fromString("19/20 April 1941") should ===(Year(1941, AD).asRight)
+    Date.fromString("June 17 or June 18, 1832") should ===(Year(1832, AD).asRight)
+    Date.fromString("From 3 to 4 February 1820") should ===(Year(1820, AD).asRight)
   }
 
   it should "ignore any prefix of suffix parenthesis" in {

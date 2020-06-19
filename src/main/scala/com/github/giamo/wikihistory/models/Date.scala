@@ -87,10 +87,12 @@ object Date {
     List("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december")
       .mkString("|")
   private val CardinalVariants = List("st", "nd", "rd", "th").mkString("|")
+  private val RangeVariants = List("\\-", "\\—", "/", "to", "until", "or").mkString("|")
   private val RegexTail = "(?:\\s*(?:\\||\\(.*\\)|<!\\-\\-|<ref|,?\\s*\\[\\[|<br|\\{\\{).*)?"
 
+  private val MonthDayRegex = s"(?:(?:from\\s*)?[0-9]+(?:$CardinalVariants)?(?:\\s*(?:$RangeVariants)\\s*[0-9]+(?:$CardinalVariants)?)?)?\\s*(?:$MonthsVariantsStr)(?:\\s*,)?|(?:from\\s*)?(?:$MonthsVariantsStr)(?:\\s*,)?(?:\\s+[0-9]+(?:$CardinalVariants)?(?:\\s*(?:$RangeVariants)\\s*[0-9]+(?:$CardinalVariants)?)?)?(?:\\s*,)?"
   private val YearRegex =
-    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:[0-9]+(?:$CardinalVariants)?)?\\s*(?:$MonthsVariantsStr)(?:\\s*,)?|(?:$MonthsVariantsStr)(?:\\s+[0-9]+(?:$CardinalVariants)?)?(?:\\s*,)?)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
+    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:$MonthDayRegex)\\s*(?:$RangeVariants)\\s*(?:$MonthDayRegex)|$MonthDayRegex)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val CenturyRegex =
     s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val WikiDateRegex =

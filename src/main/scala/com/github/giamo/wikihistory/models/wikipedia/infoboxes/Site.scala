@@ -13,7 +13,7 @@ final case class Site(
 }
 
 object Site extends Infobox[Site] {
-  override val infoboxName = "(?:settlement|ancient site|greek dimos)"
+  override val infoboxName = "(?:settlement|ancient site|greek dimos|swiss town|italian comune|german location|russian inhabited locality|military installation)"
   private val nameRegex = infoboxFieldRegex("name")
   private val coordinatesRegex = infoboxFieldRegex("coordinates")
 

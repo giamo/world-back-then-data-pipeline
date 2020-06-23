@@ -300,6 +300,11 @@ final class DateTest extends AnyFlatSpec with Matchers {
     Date.fromString("(2500~2000 BC)") should ===(DateRange(from = Year(2500, BC), to = Year(2000, BC)).asRight)
   }
 
+  it should "work with the start-date and end-date templates" in {
+    Date.fromString("{{start date|1686}}") should ===(Year(1686).asRight)
+    Date.fromString("{{end date | 1689}}") should ===(Year(1689).asRight)
+  }
+
   "The parsed from/to years" should "both be the year itself for year dates" in {
     val year1 = Year(1990, AD)
     year1.fromYear should ===(1990)

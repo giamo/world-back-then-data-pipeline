@@ -20,24 +20,26 @@ final class CapitalTest extends AnyFlatSpec with Matchers {
     fromString("[[Seleucia]]{{small|(305–240 BC)}}") should ===(
       Capital(
         name = "[[Seleucia]]",
-        dates = DateRange(Year(305, BC), Year(240, BC)).some
+        fromYear = Some(-305),
+        toYear = Some(-240)
       )
     )
     fromString("[[Zhaoge]] (ca. 1040 BC-661 BC)") should ===(
       Capital(
         name = "[[Zhaoge]]",
-        dates = DateRange(Year(1040, BC, GENERIC), Year(661, BC)).some
+        fromYear = Some(-1040),
+        toYear = Some(-661)
       )
     )
-    fromString("[[Assur]] 2025 BC") should ===(Capital(name = "[[Assur]]", dates = Year(2025, BC).some))
+    fromString("[[Assur]] 2025 BC") should ===(Capital(name = "[[Assur]]", fromYear = Some(-2025), toYear = Some(-2025)))
     fromString("[[Ngàn Hống (capital)|Ngàn Hống]] (c. 2879 BC)") should ===(
-      Capital(name = "[[Ngàn Hống (capital)|Ngàn Hống]]", dates = Year(2879, BC, GENERIC).some))
+      Capital(name = "[[Ngàn Hống (capital)|Ngàn Hống]]", fromYear = Some(-2879), toYear = Some(-2879)))
     fromString("Paris (1200-1210)") should ===(
-      Capital(name = "Paris", dates = DateRange(Year(1200), Year(1210)).some))
+      Capital(name = "Paris", fromYear = Some(1200), toYear = Some(-1210)))
     fromString("[[Paris]]  (987–1682)") should ===(
-      Capital(name = "[[Paris]]", dates = DateRange(Year(987), Year(1682)).some))
+      Capital(name = "[[Paris]]", fromYear = Some(987), toYear = Some(1682)))
     fromString("[[Versailles (city)|Versailles]]  (1682–1789)") should ===(
-      Capital(name = "[[Versailles (city)|Versailles]]", dates = DateRange(Year(1682), Year(1789)).some))
+      Capital(name = "[[Versailles (city)|Versailles]]", fromYear = Some(1682), toYear = Some(1789)))
 
     // TODO: cover remaining corner cases
 //    fromString("[[Paris]]  (987–1682;1789–1792; 1814–1848)") should ===()

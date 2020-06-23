@@ -45,13 +45,8 @@ object SparkUtils {
   // TODO: support multiple capitals in the form of "region: city"
   val parseCapitalsUdf: UserDefinedFunction = udf { (capitalString: String) =>
     Option(capitalString)
-      .map(Infobox.extractList(_).map { c =>
-        PageTitle.fromLink(Capital.fromString(c).name)
-          .map(_.value)
-          .map(c => c.replaceFirst("\\s*\\(ancient city\\)", ""))
-          .getOrElse(c)
-      })
-      .getOrElse(List.empty[String])
+      .map(Infobox.extractList(_).map(c => Capital.fromString(c)))
+      .getOrElse(List.empty[Capital])
   }
 
   val parseDateUdf: UserDefinedFunction = udf { (s: String) =>

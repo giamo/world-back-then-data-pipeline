@@ -90,17 +90,19 @@ object Date {
   private val RangeVariants = List("\\-", "\\—", "/", "to", "until", "or").mkString("|")
   private val RegexTail = "(?:\\s*(?:\\||\\(.*\\)|<!\\-\\-|<ref|,?\\s*\\[\\[|<br|\\{\\{).*)?"
 
+  private val DateTemplateRegex = s"\\{\\{\\s*(?:start date|end date)\\s*\\|\\s*(.+)\\s*\\}\\}".r
   private val MonthDayRegex = s"(?:(?:from\\s*)?[0-9]+(?:$CardinalVariants)?(?:\\s*(?:$RangeVariants)\\s*[0-9]+(?:$CardinalVariants)?)?)?\\s*(?:$MonthsVariantsStr)(?:\\s*,)?|(?:from\\s*)?(?:$MonthsVariantsStr)(?:\\s*,)?(?:\\s+[0-9]+(?:$CardinalVariants)?(?:\\s*(?:$RangeVariants)\\s*[0-9]+(?:$CardinalVariants)?)?)?(?:\\s*,)?"
   private val YearRegex =
-    s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:$MonthDayRegex)\\s*(?:$RangeVariants)\\s*(?:$MonthDayRegex)|$MonthDayRegex)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
+  s"""\\(?($ApproximationVariantsStr)?\\s*(?:(?:$MonthDayRegex)\\s*(?:$RangeVariants)\\s*(?:$MonthDayRegex)|$MonthDayRegex)?\\s*([0-9,]+)(s|'s)?\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val CenturyRegex =
-    s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
+  s"""\\(?(?:the\\s+)?($ApproximationVariantsStr)?\\s*([0-9]+)(?:$CardinalVariants)[\\s]+century\\s*($DatingLabelVariantsStr)?\\)?$RegexTail""".r
   private val WikiDateRegex =
-    s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?.*?\\{\\{\\s*(circa|birth|bda|b-da|date|bya|floruit)[a-z\\s\\-]*\\|\\s*(?:[a-z]+\\s*=\\s*[a-z]+\\|\\s*)?([^\\|\\}]+)\\s*(?:\\}\\}|\\|.*)$RegexTail".r
+  s"(?s)(?:\\{\\{.*($ApproximationVariantsStr).*\\}\\}\\s*)?.*?\\{\\{\\s*(circa|birth|bda|b-da|date|bya|floruit)[a-z\\s\\-]*\\|\\s*(?:[a-z]+\\s*=\\s*[a-z]+\\|\\s*)?([^\\|\\}]+)\\s*(?:\\}\\}|\\|.*)$RegexTail".r
   private val AlternativesRegex =
-    s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/|,)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
+  s"\\(?(?:either\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:or|\\/|,)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
   private val RangeRegex =
-    s"\\(?(?:\\s*from\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:\\-|\\~|\\—|\\sto)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
+  s"\\(?(?:\\s*from\\s+)?([^-]+?($DatingLabelVariantsStr)?)\\s*(?:\\-|\\~|\\—|\\sto)\\s*([^-]+?($DatingLabelVariantsStr)?)\\)?$RegexTail".r
+
 
   // TODO: cover more corner cases
   // ex: 1936 , August 3rd
@@ -116,10 +118,12 @@ object Date {
   // ex: 3649 KE 779 AH or 1377 CE
   // ex: Unknown (/Uncertain), 6th Century – 4th century BC
   // ex: [[1937]]
+  // ex: [[Western Zhou]] (1045 – 771 BC)&lt;ref name=&quot;Fong253&quot;/&gt
   def fromString(dateStr: String): Either[ParseError, Date] = {
     val withoutReferences = WikiCleanUtils.removeReferences(dateStr)
     val cleanHtml = HtmlUtils.cleanHtmlString(withoutReferences).toLowerCase
     cleanHtml match {
+      case DateTemplateRegex(yearPart) => fromString(yearPart)
       case YearRegex(approximatePrefix, year, decadeSuffix, label) =>
         for {
           datingLabel <- DatingLabel.fromString(label)

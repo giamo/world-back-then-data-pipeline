@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream
 import com.databricks.spark.xml.XmlInputFormat
 import info.bliki.wiki.dump.{IArticleFilter, Siteinfo, WikiArticle, WikiXMLParser}
 import com.github.giamo.wikihistory.models.wikipedia.infoboxes.{ArchaeologicalCulture, ArtMovement, Country, MilitaryConflict, Philosopher, Site}
-import com.github.giamo.wikihistory.models.wikipedia.WikiPage
+import com.github.giamo.wikihistory.models.wikipedia.{ParsedPage, WikiPage}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
@@ -111,4 +111,7 @@ final class WikiParser(spark: SparkSession) extends Serializable {
 
   def extractMilitaryConflicts(pagesDf: Dataset[WikiPage]): Dataset[MilitaryConflict] =
     pagesDf.flatMap(MilitaryConflict.fromInfobox)
+
+  def extractGenericPage(pagesDf: Dataset[WikiPage]): Dataset[ParsedPage] =
+    pagesDf.map(ParsedPage.fromRawPage)
 }
